@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trastes — aprenda violão do zero</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#3B2015">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --spruce:#E4CFA0; --spruce-deep:#D9B677; --rosewood:#3B2015; --rosewood-2:#2A160E;
+    --steel:#9C9C94; --copper:#A85C32; --copper-light:#C97A4E; --moss:#3F5C43; --moss-light:#5C7A5C;
+    --cream:#FAF3E3; --ink:#2A1B10; --line: rgba(59,32,21,0.16); --shadow: 0 6px 18px rgba(42,22,14,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--spruce);
+    background-image: radial-gradient(ellipse at top left, rgba(255,255,255,0.25), transparent 55%),
+      repeating-linear-gradient(115deg, rgba(59,32,21,0.02) 0px, rgba(59,32,21,0.02) 2px, transparent 2px, transparent 26px);
+    color: var(--ink); font-family: 'Inter', sans-serif; min-height:100vh;
+  }
+  h1,h2,h3,.display{ font-family:'Fraunces', serif; letter-spacing:-0.01em; color: var(--rosewood); }
+  a{color:inherit;} button{font-family:inherit;}
+  .app{ display:grid; grid-template-columns: 250px 1fr; min-height:100vh; }
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{position:sticky; top:0; z-index:20; display:flex; flex-direction:column;}
+    .modlist{padding:0 10px 10px; gap:6px;}
+  }
+  .sidebar{ background: var(--rosewood); color: var(--cream); padding: 24px 20px; display:flex; flex-direction:column; }
+  .brand{ display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+  .brand svg{width:34px;height:34px;flex-shrink:0;}
+  .brand .name{font-family:'Fraunces',serif; font-size:22px; font-weight:600; color:var(--cream);}
+  .brand .tag{font-size:11px; color:var(--spruce-deep); display:block; margin-top:-2px;}
+  .profile-chip{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; background:rgba(250,243,227,0.08); border-radius:10px; padding:8px 12px; margin-bottom:18px; font-size:12.5px; }
+  .profile-chip > div{display:flex; gap:8px; flex-wrap:wrap;}
+  .profile-chip button{ background:none; border:none; color:var(--spruce-deep); font-size:11px; cursor:pointer; text-decoration:underline; padding:0; }
+  .modlist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; flex:1;}
+  .modlist li button{ width:100%; text-align:left; background:transparent; border:none; color:var(--cream); padding:10px 12px; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:10px; font-size:14px; opacity:0.72; transition:background .15s, opacity .15s; }
+  .modlist li button .dot{width:7px;height:7px;border-radius:50%; background:var(--steel); flex-shrink:0;}
+  .modlist li button.active{background:rgba(250,243,227,0.12); opacity:1;}
+  .modlist li button.active .dot{background:var(--copper-light);}
+  .modlist li button:hover{opacity:1; background:rgba(250,243,227,0.08);}
+  .modlist li button .prog{margin-left:auto; font-size:10.5px; color:var(--spruce-deep);}
+  .topbar{ display:flex; align-items:center; justify-content:space-between; padding: 20px 34px; gap:20px; flex-wrap:wrap; border-bottom:1px solid var(--line); }
+  .stat{display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:var(--rosewood);}
+  .stats-row{display:flex; gap:22px; align-items:center;}
+  .xpbar-wrap{width:150px; height:8px; border-radius:5px; background:rgba(59,32,21,0.15); overflow:hidden;}
+  .xpbar{height:100%; background:linear-gradient(90deg, var(--moss-light), var(--moss)); border-radius:5px; transition:width .5s ease;}
+  main{padding: 10px 34px 60px;}
+  .hero{padding: 30px 0 10px; max-width:640px;}
+  .hero h1{font-size:32px; margin:0 0 8px; line-height:1.15;}
+  .hero p{margin:0; color:#5b4636; font-size:15px; line-height:1.55;}
+  .trilha{position:relative; max-width:640px; margin:40px auto 0; padding-bottom:60px;}
+  .node-row{display:flex; align-items:center; margin-bottom: 6px; position:relative;}
+  .node-row.right{justify-content:flex-end;} .node-row.left{justify-content:flex-start;} .node-row.center{justify-content:center;}
+  .connector{ width:3px; height:46px; background: repeating-linear-gradient(var(--rosewood) 0 6px, transparent 6px 12px); margin: 0 auto; opacity:.4; }
+  .node{ width:78px; height:78px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer; border:none; box-shadow: var(--shadow); flex-direction:column; }
+  .node .ic{font-size:26px;}
+  .node.done{ background: linear-gradient(160deg, var(--moss-light), var(--moss)); color:var(--cream);}
+  .node.available{ background: linear-gradient(160deg, var(--copper-light), var(--copper)); color:var(--cream); animation:pulse 2.2s infinite;}
+  .node.locked{ background: #cbb98c; color:#8a7a53; cursor:not-allowed; box-shadow:none;}
+  .node.quiz{ border-radius:22px; }
+  @keyframes pulse{ 0%{ box-shadow: var(--shadow), 0 0 0 0 rgba(168,92,50,0.45);} 70%{ box-shadow: var(--shadow), 0 0 0 14px rgba(168,92,50,0);} 100%{ box-shadow: var(--shadow), 0 0 0 0 rgba(168,92,50,0);} }
+  .node-label{ position:absolute; top:100%; margin-top:6px; width:150px; text-align:center; font-size:12.5px; font-weight:600; color:var(--rosewood); left:50%; transform:translateX(-50%); }
+  .locked-module{ max-width:480px; margin: 30px auto 50px; text-align:center; opacity:.85; }
+  .locked-module .badge{ display:inline-block; background:rgba(59,32,21,0.08); color:var(--rosewood); font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:20px; margin-bottom:10px; }
+  .locked-module h3{margin:0 0 6px; font-size:18px;}
+  .locked-module p{font-size:13.5px; color:#5b4636; margin:0 0 14px;}
+  .overlay{ position:fixed; inset:0; background:rgba(20,10,5,0.55); backdrop-filter:blur(2px); display:none; align-items:flex-start; justify-content:center; z-index:100; padding: 4vh 16px; overflow-y:auto; }
+  .overlay.open{display:flex;}
+  .modal{ background:var(--cream); border-radius:18px; max-width:620px; width:100%; padding: 30px 32px 28px; box-shadow:0 24px 60px rgba(0,0,0,0.35); animation: rise .25s ease; position:relative; }
+  @keyframes rise{from{transform:translateY(16px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .modal h2{margin:0 0 4px; font-size:23px;}
+  .modal .kicker{font-size:12px; font-weight:700; color:var(--copper); margin-bottom:6px;}
+  .modal .body p{font-size:14.5px; line-height:1.65; color:#3d2c1e;}
+  .modal .body ul, .modal .body ol{font-size:14.5px; line-height:1.7; color:#3d2c1e; padding-left:20px;}
+  .modal .close{ position:absolute; top:18px; right:20px; background:none; border:none; font-size:20px; cursor:pointer; color:#8a7358; }
+  .modal-footer{display:flex; justify-content:flex-end; gap:10px; margin-top:22px;}
+  .btn{ border:none; padding:11px 20px; border-radius:10px; font-weight:600; cursor:pointer; font-size:14px; }
+  .btn-primary{background:var(--copper); color:var(--cream);} .btn-primary:hover{background:var(--copper-light);}
+  .btn-ghost{background:transparent; color:var(--rosewood);}
+  .btn-primary:disabled{opacity:.5; cursor:not-allowed;}
+  figure{margin:14px 0; text-align:center;} figure svg{max-width:100%;} figcaption{font-size:12px; color:#8a7358; margin-top:6px;}
+  .string-list{display:flex; flex-direction:column; gap:8px; margin:16px 0;}
+  .string-row{ display:flex; align-items:center; gap:12px; background:rgba(59,32,21,0.05); border-radius:10px; padding:8px 12px; }
+  .string-row .num{ width:26px;height:26px;border-radius:50%; background:var(--rosewood); color:var(--cream); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+  .string-row .note{font-family:'Fraunces',serif; font-weight:600; font-size:16px; width:34px;}
+  .string-row .desc{font-size:12.5px; color:#5b4636;}
+  .quiz-opt{ display:block; width:100%; text-align:left; padding:12px 14px; margin-bottom:8px; border-radius:10px; border:1.5px solid var(--line); background:transparent; cursor:pointer; font-size:14px; color:var(--ink); }
+  .quiz-opt:hover{border-color:var(--copper);}
+  .quiz-opt.correct{background:rgba(63,92,67,0.15); border-color:var(--moss);}
+  .quiz-opt.wrong{background:rgba(168,60,50,0.12); border-color:#a83c32;}
+  .quiz-feedback{font-size:13.5px; font-weight:600; margin-top:10px; min-height:18px;}
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--rosewood); color:var(--cream); padding:12px 20px; border-radius:12px; font-size:14px; font-weight:600; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition: all .35s ease; z-index:200; display:flex; align-items:center; gap:8px; }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .rhythm-row{display:flex; gap:10px; justify-content:center; margin:14px 0; flex-wrap:wrap;}
+  .rhythm-step{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .rhythm-step .arrow{width:38px;height:38px;border-radius:10px; background:var(--copper); color:white; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700;}
+  .rhythm-step .beat{font-size:11px; color:#8a7358;}
+  .scaletable{width:100%; border-collapse:collapse; margin:14px 0; font-size:13px;}
+  .scaletable th,.scaletable td{border:1px solid var(--line); padding:6px 4px; text-align:center;}
+  .scaletable th{background:rgba(59,32,21,0.06); color:var(--rosewood); font-weight:700;}
+  .scaletable td.root{background:rgba(168,92,50,0.2); font-weight:700; color:var(--copper);}
+  .picking-row{display:flex; gap:8px; justify-content:center; margin:14px 0; flex-wrap:wrap;}
+  .picking-chip{width:40px;height:40px;border-radius:50%; background:var(--moss); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;}
+  .onboard-input{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; margin:14px 0; font-family:inherit;}
+  .tool-btn{ background:rgba(59,32,21,0.06); border:1px solid var(--line); color:var(--rosewood); padding:8px 14px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .tool-btn:hover{background:rgba(59,32,21,0.12);}
+  .tool-panel{ position:fixed; bottom:24px; right:24px; background:var(--cream); border-radius:16px; box-shadow:0 16px 40px rgba(0,0,0,0.28); padding:20px 22px; width:260px; z-index:150; display:none; }
+  .tool-panel.open{display:block;}
+  .tool-panel h3{margin:0 0 12px; font-size:16px;}
+  .tool-panel .close-tool{position:absolute; top:12px; right:14px; background:none; border:none; font-size:16px; cursor:pointer; color:#8a7358;}
+  .bpm-row{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .bpm-row input[type=range]{flex:1;}
+  .bpm-val{font-family:'Fraunces',serif; font-weight:700; font-size:18px; color:var(--copper); width:44px; text-align:right;}
+  .metro-dot{width:16px;height:16px;border-radius:50%; background:var(--line); margin:0 auto 12px; transition:background .08s, transform .08s;}
+  .metro-dot.beat{background:var(--copper); transform:scale(1.3);}
+  .tuner-note{font-family:'Fraunces',serif; font-size:38px; font-weight:700; text-align:center; color:var(--rosewood); margin:6px 0;}
+  .tuner-gauge{height:10px; border-radius:6px; background:rgba(59,32,21,0.1); position:relative; margin:10px 0 4px;}
+  .tuner-needle{position:absolute; top:-4px; width:4px; height:18px; border-radius:2px; background:var(--copper); left:50%; transform:translateX(-50%); transition:left .1s;}
+  .tuner-cents{text-align:center; font-size:12px; color:#8a7358;}
+  .badge-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0;}
+  .badge-item{text-align:center; padding:10px 4px; border-radius:12px; background:rgba(59,32,21,0.05);}
+  .badge-item.locked{opacity:.35;}
+  .badge-item .bicon{font-size:26px;}
+  .badge-item .btitle{font-size:10.5px; font-weight:600; color:var(--rosewood); margin-top:4px; line-height:1.2;}
+  .node:focus-visible, .quiz-opt:focus-visible, .btn:focus-visible, .tool-btn:focus-visible{ outline:3px solid var(--copper); outline-offset:2px; }
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; font-size:13.5px; color:var(--rosewood); gap:10px;}
+  .switch{position:relative; width:42px; height:24px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .switch .slider{position:absolute; inset:0; background:rgba(59,32,21,0.2); border-radius:24px; cursor:pointer; transition:.2s;}
+  .switch .slider:before{content:""; position:absolute; width:18px; height:18px; left:3px; top:3px; background:white; border-radius:50%; transition:.2s;}
+  .switch input:checked + .slider{background:var(--moss);}
+  .switch input:checked + .slider:before{transform:translateX(18px);}
+  .settings-divider{border:none; border-top:1px solid var(--line); margin:14px 0;}
+  .rank-row{display:flex; align-items:center; gap:10px; padding:7px 0; font-size:13.5px; border-bottom:1px solid var(--line);}
+  .rank-row .pos{width:20px; font-weight:700; color:var(--copper);}
+  .rank-row .rname{flex:1; font-weight:600;}
+  .rank-row .rxp{color:#8a7358; font-size:12px;}
+  body.high-contrast{ --spruce:#FFFFFF; --spruce-deep:#CFCFCF; --rosewood:#000000; --rosewood-2:#000000; --copper:#7A2E00; --copper-light:#7A2E00; --moss:#0B3D0B; --moss-light:#0B3D0B; --cream:#FFFFFF; --ink:#000000; --line:#000000; --steel:#444444; }
+  body.high-contrast .node.locked{background:#555; color:#fff;}
+  body.high-contrast .quiz-opt{border-width:2px;}
+  body.high-contrast .xpbar-wrap{background:#ccc;}
+  body.high-contrast .sidebar{background:#000;}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+   <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="#e7c98a"/><stop offset="60%" stop-color="#caa15c"/><stop offset="100%" stop-color="#a9793f"/>
+   </linearGradient>
+   <radialGradient id="gBody" cx="35%" cy="30%" r="80%">
+     <stop offset="0%" stop-color="#c9793f"/><stop offset="70%" stop-color="#a85c32"/><stop offset="100%" stop-color="#7a3f1f"/>
+   </radialGradient>
+   <linearGradient id="gSkin" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0%" stop-color="#e7b98c"/><stop offset="100%" stop-color="#c98f5e"/>
+   </linearGradient>
+   <linearGradient id="gHead" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0%" stop-color="#4a2a1c"/><stop offset="100%" stop-color="#2A160E"/>
+   </linearGradient>
+   <filter id="grain" x="-20%" y="-20%" width="140%" height="140%">
+     <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+     <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+   </filter>
+   <filter id="softshadow" x="-30%" y="-30%" width="160%" height="160%">
+     <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#2A160E" flood-opacity="0.35"/>
+   </filter>
+ </defs>
+</svg>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="19" stroke="var(--spruce-deep)" stroke-width="2"/><path d="M20 8v16M14 27a6 6 0 1 0 12 0" stroke="var(--cream)" stroke-width="2" stroke-linecap="round"/></svg>
+      <div><span class="name">Trastes</span><span class="tag">violão do zero ao avançado</span></div>
+    </div>
+    <div class="profile-chip" id="profileChip" style="display:none">
+      <span id="profileName"></span>
+      <div style="display:flex; gap:8px;">
+        <button onclick="exportProgress()">exportar</button>
+        <button onclick="document.getElementById('importInput').click()">importar</button>
+        <button onclick="resetProfile()">trocar perfil</button>
+      </div>
+    </div>
+    <input type="file" id="importInput" accept="application/json" style="display:none" onchange="importProgress(this.files[0])"/>
+    <ul class="modlist" id="modlist"></ul>
+  </aside>
+
+  <div>
+    <div class="topbar">
+      <div class="stats-row">
+        <div class="stat">🔥 <span id="streakVal">1</span> dia</div>
+        <div class="stat">⭐ Nível <span id="levelVal">1</span></div>
+      </div>
+      <div class="stats-row">
+        <button class="tool-btn" onclick="toggleBadges()">🏅 Conquistas</button>
+        <button class="tool-btn" onclick="toggleMetronomePanel()">🥁 Metrônomo</button>
+        <button class="tool-btn" onclick="toggleTunerPanel()">🎵 Afinador</button>
+        <button class="tool-btn" onclick="toggleSettingsPanel()">⚙️ Mais</button>
+        <div class="stat">XP <span id="xpVal">0</span>/<span id="xpMaxVal">100</span></div>
+        <div class="xpbar-wrap"><div class="xpbar" id="xpbar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <main id="mainArea"></main>
+  </div>
+</div>
+
+<div class="tool-panel" id="metroPanel">
+  <button class="close-tool" onclick="toggleMetronomePanel()">✕</button>
+  <h3>🥁 Metrônomo</h3>
+  <div class="metro-dot" id="metroDot"></div>
+  <div class="bpm-row"><input type="range" id="bpmRange" min="50" max="200" value="80"/><span class="bpm-val" id="bpmVal">80</span></div>
+  <button class="btn btn-primary" id="metroToggleBtn" style="width:100%" onclick="toggleMetronome()">Iniciar</button>
+</div>
+
+<div class="tool-panel" id="tunerPanel">
+  <button class="close-tool" onclick="toggleTunerPanel()">✕</button>
+  <h3>🎵 Afinador</h3>
+  <div class="tuner-note" id="tunerNote">—</div>
+  <div class="tuner-gauge"><div class="tuner-needle" id="tunerNeedle" style="left:50%"></div></div>
+  <div class="tuner-cents" id="tunerCents">Toque uma corda</div>
+  <button class="btn btn-primary" id="tunerToggleBtn" style="width:100%; margin-top:12px" onclick="toggleTuner()">Ativar microfone</button>
+</div>
+
+<div class="tool-panel" id="badgesPanel" style="width:300px">
+  <button class="close-tool" onclick="toggleBadges()">✕</button>
+  <h3>🏅 Suas conquistas</h3>
+  <div class="badge-grid" id="badgeGrid"></div>
+</div>
+
+<div class="tool-panel" id="settingsPanel" style="width:290px">
+  <button class="close-tool" onclick="toggleSettingsPanel()">✕</button>
+  <h3>⚙️ Mais opções</h3>
+  <div class="toggle-row">Alto contraste
+    <label class="switch"><input type="checkbox" id="chkContrast" onchange="toggleHighContrast(this.checked)"/><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">Sou canhoto(a)
+    <label class="switch"><input type="checkbox" id="chkLefty" onchange="toggleLeftHanded(this.checked)"/><span class="slider"></span></label>
+  </div>
+  <hr class="settings-divider"/>
+  <button class="btn btn-ghost" style="width:100%; border:1px solid var(--line); margin-bottom:8px" onclick="toggleSettingsPanel(); toggleRankingPanel();">🏆 Ranking entre amigos</button>
+  <button class="btn btn-ghost" style="width:100%; border:1px solid var(--line)" onclick="toggleSettingsPanel(); toggleTurmaPanel();">🏫 Modo turma / professor</button>
+</div>
+
+<div class="tool-panel" id="rankingPanel" style="width:300px">
+  <button class="close-tool" onclick="toggleRankingPanel()">✕</button>
+  <h3>🏆 Ranking entre amigos</h3>
+  <div id="rankingBody"><p style="font-size:12.5px; color:#8a7358">Carregando…</p></div>
+</div>
+
+<div class="tool-panel" id="turmaPanel" style="width:300px">
+  <button class="close-tool" onclick="toggleTurmaPanel()">✕</button>
+  <h3>🏫 Modo turma</h3>
+  <div id="turmaBody"></div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= ILLUSTRATION HELPERS (vetor, estilo realista) ================= */
+function guitarSVG(){
+  return `<svg viewBox="0 0 220 420" width="180" filter="url(#softshadow)">
+    <ellipse cx="70" cy="330" rx="62" ry="78" fill="url(#gBody)" stroke="var(--rosewood)" stroke-width="3"/>
+    <ellipse cx="70" cy="330" rx="62" ry="78" fill="url(#gBody)" filter="url(#grain)"/>
+    <circle cx="70" cy="315" r="24" fill="var(--rosewood-2)"/>
+    <rect x="55" y="10" width="30" height="270" rx="6" fill="url(#gTop)" stroke="var(--rosewood)" stroke-width="3"/>
+    ${[40,70,100,130,160,190,220,250].map(y=>`<line x1="55" y1="${y}" x2="85" y2="${y}" stroke="#7a5a34" stroke-width="2"/>`).join('')}
+    <rect x="45" y="0" width="50" height="34" rx="8" fill="url(#gHead)"/>
+    ${[8,16,24].map((x,idx)=>`<circle cx="${52+idx*17}" cy="10" r="3" fill="var(--steel)"/><circle cx="${52+idx*17}" cy="24" r="3" fill="var(--steel)"/>`).join('')}
+    ${[60,64,68,72,76,80].map((x)=>`<line x1="${x}" y1="34" x2="${x}" y2="380" stroke="#eee" stroke-width="1"/>`).join('')}
+    <text x="105" y="20" font-size="11" fill="var(--rosewood)" font-family="Inter">tarraxas</text>
+    <text x="105" y="150" font-size="11" fill="var(--rosewood)" font-family="Inter">braço / trastes</text>
+    <text x="140" y="300" font-size="11" fill="var(--rosewood)" font-family="Inter">boca</text>
+    <text x="20" y="410" font-size="11" fill="var(--rosewood)" font-family="Inter">corpo</text>
+  </svg>`;
+}
+function handPostureSVG(kind){
+  const flip = (typeof state!=='undefined' && state.leftHanded) ? ' style="transform:scaleX(-1)"' : '';
+  if(kind==='left'){
+    return `<svg viewBox="0 0 200 160" width="200" filter="url(#softshadow)"${flip}>
+      <rect x="20" y="60" width="160" height="20" rx="6" fill="url(#gTop)" stroke="var(--rosewood)" stroke-width="2"/>
+      ${[40,70,100,130,160].map(x=>`<line x1="${x}" y1="60" x2="${x}" y2="80" stroke="#7a5a34" stroke-width="2"/>`).join('')}
+      <path d="M10 40 C 0 55, 0 85, 14 95 C 26 102, 40 96, 44 82 L 46 68 C 46 60, 40 55, 32 56 C 20 44, 12 38, 10 40 Z" fill="url(#gSkin)" stroke="#8a5a34" stroke-width="1.5"/>
+      <circle cx="70" cy="70" r="5" fill="var(--rosewood)"/>
+      <text x="100" y="130" text-anchor="middle" font-size="11" fill="#5b4636">polegar atrás do braço, dedos curvados como uma "garra"</text>
+    </svg>`;
+  }
+  return `<svg viewBox="0 0 200 160" width="200" filter="url(#softshadow)"${flip}>
+    <ellipse cx="100" cy="90" rx="70" ry="45" fill="url(#gBody)" filter="url(#grain)"/>
+    <path d="M150 40 C 165 45, 172 60, 165 75 L 130 95" fill="none" stroke="url(#gSkin)" stroke-width="7" stroke-linecap="round"/>
+    <text x="100" y="140" text-anchor="middle" font-size="11" fill="#5b4636">antebraço apoiado na lateral, mão solta para "varrer" as cordas</text>
+  </svg>`;
+}
+// gerador genérico de diagrama de acorde
+function chordDiagram(title, baseFret, strings, barre){
+  let strs = strings, br = barre;
+  if(typeof state!=='undefined' && state.leftHanded){
+    strs = [...strings].reverse();
+    if(barre) br = {fret:barre.fret, finger:barre.finger, from:5-barre.to, to:5-barre.from};
+  }
+  const left=30, top=40, rowH=28;
+  let svg = `<svg viewBox="0 0 180 200" width="170">
+    <text x="90" y="16" text-anchor="middle" font-size="13" font-weight="700" font-family="Fraunces" fill="var(--rosewood)">${title}</text>`;
+  if(baseFret>1) svg += `<text x="16" y="${top+rowH*0.7}" font-size="11" fill="var(--copper)" font-weight="700">${baseFret}ª</text>`;
+  for(let i=0;i<6;i++){ const x=left+i*24; svg += `<line x1="${x}" y1="${top}" x2="${x}" y2="${top+rowH*4}" stroke="var(--rosewood)" stroke-width="1.5"/>`; }
+  for(let r=0;r<=4;r++){ const y=top+r*rowH; const thick=(r===0 && baseFret===1)?4:1.5; svg += `<line x1="${left}" y1="${y}" x2="${left+120}" y2="${y}" stroke="var(--rosewood)" stroke-width="${thick}"/>`; }
+  strs.forEach((s,i)=>{ const x=left+i*24;
+    if(s==='x') svg += `<text x="${x}" y="${top-10}" text-anchor="middle" font-size="13" fill="#a83c32" font-weight="700">×</text>`;
+    else if(s===0) svg += `<circle cx="${x}" cy="${top-14}" r="6" fill="none" stroke="var(--moss)" stroke-width="2"/>`;
+  });
+  if(br){ const y=top+(br.fret-0.5)*rowH; const x1=left+br.from*24, x2=left+br.to*24;
+    svg += `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="var(--copper)" stroke-width="14" stroke-linecap="round" opacity="0.88"/>
+    <text x="${(x1+x2)/2}" y="${y+4}" text-anchor="middle" font-size="10" fill="white" font-weight="700">${br.finger}</text>`; }
+  strs.forEach((s,i)=>{ if(s && typeof s==='object'){ const x=left+i*24; const y=top+(s.fret-0.5)*rowH;
+    svg += `<circle cx="${x}" cy="${y}" r="9" fill="var(--copper)"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="10" fill="white" font-weight="700">${s.finger}</text>`; } });
+  svg += `</svg>`;
+  return svg;
+}
+function rhythmDiagram(pattern){
+  return `<div class="rhythm-row">${pattern.map((p,i)=>`<div class="rhythm-step"><div class="arrow">${p==='D'?'↓':'↑'}</div><div class="beat">${i+1}</div></div>`).join('')}</div>`;
+}
+
+/* ================= ÁUDIO (síntese, sem arquivos externos) ================= */
+const AudioEngine = (function(){
+  let ctx;
+  function ensureCtx(){ if(!ctx) ctx = new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended') ctx.resume(); return ctx; }
+  function playTone(freq, duration=1.2, delay=0){
+    const c = ensureCtx(); const t0 = c.currentTime + delay;
+    const osc = c.createOscillator(); const gain = c.createGain();
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.22, t0+0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0+duration);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t0); osc.stop(t0+duration+0.05);
+  }
+  const STRING_FREQS = [82.41,110.00,146.83,196.00,246.94,329.63]; // 6ª(E)..1ª(e)
+  function playString(stringNum){ playTone(STRING_FREQS[6-stringNum], 1.5); }
+  function playChord(freqs){ freqs.forEach((f,i)=> f && playTone(f, 1.7, i*0.02)); }
+  function playClick(strong){
+    const c = ensureCtx(); const t0 = c.currentTime;
+    const osc = c.createOscillator(); const gain = c.createGain();
+    osc.type='square'; osc.frequency.setValueAtTime(strong?1500:1000,t0);
+    gain.gain.setValueAtTime(0.3,t0); gain.gain.exponentialRampToValueAtTime(0.0001,t0+0.05);
+    osc.connect(gain).connect(c.destination); osc.start(t0); osc.stop(t0+0.06);
+  }
+  return {playString, playChord, playClick, ensureCtx, STRING_FREQS};
+})();
+const CHORD_FRETS = {
+  Em:[0,2,2,0,0,0], C:['x',3,2,0,1,0], G:[3,2,0,0,0,3], D:['x','x',0,2,3,2],
+  Am:['x',0,2,2,1,0], babyF:['x','x',3,2,1,1], fullF:[1,3,3,2,1,1], B7:['x',2,1,2,0,2],
+};
+function chordFreqs(key){
+  return CHORD_FRETS[key].map((f,i)=> f==='x' ? null : AudioEngine.STRING_FREQS[i]*Math.pow(2, f/12));
+}
+function chordFigure(key, title, baseFret, strings, barre, caption){
+  return `<figure>${chordDiagram(title, baseFret, strings, barre)}
+    <div style="margin-top:8px"><button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border:1px solid var(--line)" onclick="AudioEngine.playChord(chordFreqs('${key}'))">🔊 Ouvir o acorde</button></div>
+    <figcaption>${caption}</figcaption></figure>`;
+}
+
+/* ================= DADOS ================= */
+const STRINGS = [
+  {n:6, note:'Mi', full:'E (grave)', desc:'a corda mais grossa, mais próxima do seu queixo quando o violão está na posição de tocar'},
+  {n:5, note:'Lá', full:'A', desc:'segunda mais grossa'},
+  {n:4, note:'Ré', full:'D', desc:'corda do meio, lado grave'},
+  {n:3, note:'Sol', full:'G', desc:'corda do meio, lado agudo'},
+  {n:2, note:'Si', full:'B', desc:'segunda mais fina'},
+  {n:1, note:'Mi', full:'e (agudo)', desc:'a corda mais fina, mais próxima do chão quando você toca'},
+];
+
+const MODULES = [
+  {id:'fundamentos', title:'Fundamentos', icon:'🎸', desc:'Comece do absoluto zero: partes do violão, cordas, postura e seu 1º acorde.',
+    nodes:[
+      {id:'f1', type:'lesson', title:'Conhecendo o violão', icon:'🎸'},
+      {id:'f2', type:'lesson', title:'As 6 cordas', icon:'🎻'},
+      {id:'f3', type:'lesson', title:'Postura das mãos', icon:'✋'},
+      {id:'f4', type:'quiz',   title:'Revisão rápida', icon:'❓'},
+      {id:'f5', type:'lesson', title:'Lendo um diagrama', icon:'📐'},
+      {id:'f6', type:'lesson', title:'Seu 1º acorde: Em', icon:'🎶'},
+      {id:'f7', type:'quiz',   title:'Desafio final', icon:'🏁'},
+    ]},
+  {id:'acordes', title:'Primeiros acordes', icon:'🤚', desc:'Domine C, G, D e Am, e aprenda a trocar entre eles sem travar.',
+    nodes:[
+      {id:'acor1', type:'lesson', title:'Acorde de Dó (C)', icon:'🎶'},
+      {id:'acor2', type:'lesson', title:'Acorde de Sol (G)', icon:'🎶'},
+      {id:'acor3', type:'lesson', title:'Acorde de Ré (D)', icon:'🎶'},
+      {id:'acor4', type:'lesson', title:'Acorde de Lá menor (Am)', icon:'🎶'},
+      {id:'acor5', type:'quiz',   title:'Reconhecendo acordes', icon:'❓'},
+      {id:'acor6', type:'lesson', title:'Trocando sem travar', icon:'🔄'},
+      {id:'acor7', type:'quiz',   title:'Desafio final', icon:'🏁'},
+    ]},
+  {id:'ritmo', title:'Ritmo e levada', icon:'🥁', desc:'Saia do dedilhado travado: batidas, contagem de tempo e levadas prontas.',
+    nodes:[
+      {id:'rit1', type:'lesson', title:'Contando os tempos', icon:'🕐'},
+      {id:'rit2', type:'lesson', title:'Batida para baixo', icon:'⬇️'},
+      {id:'rit3', type:'lesson', title:'Batida para cima', icon:'⬆️'},
+      {id:'rit4', type:'quiz',   title:'Contando movimentos', icon:'❓'},
+      {id:'rit5', type:'lesson', title:'Levada de balada', icon:'🎵'},
+      {id:'rit6', type:'lesson', title:'Levada de MPB', icon:'🎵'},
+      {id:'rit7', type:'quiz',   title:'Desafio final', icon:'🏁'},
+    ]},
+  {id:'repertorio', title:'Repertório inicial', icon:'📖', desc:'As primeiras músicas completas, com 2 a 3 acordes.',
+    nodes:[
+      {id:'rep1', type:'lesson', title:'Como ler uma cifra', icon:'📄'},
+      {id:'rep2', type:'lesson', title:'Exercício: "Tarde de Domingo"', icon:'🎼'},
+      {id:'rep3', type:'lesson', title:'Exercício: "Estrada Livre"', icon:'🎼'},
+      {id:'rep4', type:'quiz',   title:'Lendo a cifra', icon:'❓'},
+      {id:'rep5', type:'lesson', title:'Grave e compare', icon:'🎙️'},
+      {id:'rep6', type:'lesson', title:'Adaptando a levada', icon:'🔧'},
+      {id:'rep7', type:'quiz',   title:'Desafio final', icon:'🏁'},
+    ]},
+  {id:'pestana', title:'Pestana e acordes com barra', icon:'🪵', desc:'O maior salto de dificuldade do iniciante — sem sofrimento.',
+    nodes:[
+      {id:'pest1', type:'lesson', title:'O que é pestana', icon:'📌'},
+      {id:'pest2', type:'lesson', title:'Fortalecendo o indicador', icon:'💪'},
+      {id:'pest3', type:'lesson', title:'Fá fácil (baby F)', icon:'🎶'},
+      {id:'pest4', type:'lesson', title:'Si7 (versão fácil do B)', icon:'🎶'},
+      {id:'pest5', type:'quiz',   title:'Por que soa abafado?', icon:'❓'},
+      {id:'pest6', type:'lesson', title:'Fá completo (pestana real)', icon:'🎶'},
+      {id:'pest7', type:'quiz',   title:'Desafio final', icon:'🏁'},
+    ]},
+  {id:'teoria', title:'Escalas e teoria aplicada', icon:'🎼', desc:'Entenda por que os acordes de uma música combinam entre si.',
+    nodes:[
+      {id:'teo1', type:'lesson', title:'O que é uma escala', icon:'📊'},
+      {id:'teo2', type:'lesson', title:'Escala de Dó maior', icon:'📊'},
+      {id:'teo3', type:'lesson', title:'Campo harmônico', icon:'🧩'},
+      {id:'teo4', type:'quiz',   title:'Identificando graus', icon:'❓'},
+      {id:'teo5', type:'lesson', title:'Montando uma progressão', icon:'🧩'},
+      {id:'teo6', type:'lesson', title:'Cifras avançadas', icon:'📄'},
+      {id:'teo7', type:'quiz',   title:'Desafio final', icon:'🏁'},
+    ]},
+  {id:'avancado', title:'Técnica avançada', icon:'🏆', desc:'Fingerstyle, arpejos e independência dos dedos.',
+    nodes:[
+      {id:'avan1', type:'lesson', title:'Introdução ao arpejo', icon:'🎶'},
+      {id:'avan2', type:'lesson', title:'Padrão de arpejo p-i-m-a', icon:'🎶'},
+      {id:'avan3', type:'lesson', title:'Introdução ao fingerstyle', icon:'🎸'},
+      {id:'avan4', type:'lesson', title:'Percussão no tampo', icon:'🥁'},
+      {id:'avan5', type:'quiz',   title:'Qual dedo faz o quê?', icon:'❓'},
+      {id:'avan6', type:'lesson', title:'Independência dos dedos', icon:'💪'},
+      {id:'avan7', type:'quiz',   title:'Trilha completa!', icon:'🏆'},
+    ]},
+];
+
+const LESSONS = {
+  f1:{title:'Conhecendo o violão', kicker:'Fundamentos · Aula 1', xp:10, body:`
+    <figure>${guitarSVG()}<figcaption>Partes principais do violão</figcaption></figure>
+    <p>Antes de tocar qualquer coisa, vale reconhecer as partes do instrumento — assim qualquer instrução futura vai fazer sentido.</p>
+    <ul><li><b>Tarraxas:</b> afinam cada corda.</li><li><b>Braço e trastes:</b> cada espaço entre os trastes é uma "casa".</li><li><b>Corpo e boca:</b> amplificam o som.</li></ul>
+    <p>Sente-se com o violão apoiado na perna, a boca voltada levemente para cima, e o braço na diagonal.</p>`},
+  f2:{title:'As 6 cordas', kicker:'Fundamentos · Aula 2', xp:15, body:`
+    <p>Da corda mais grossa para a mais fina, cada uma tem um nome fixo — base de tudo: afinação, acordes e escalas.</p>
+    <div class="string-list">${STRINGS.map(s=>`<div class="string-row"><div class="num">${s.n}</div><div class="note">${s.note}</div><div class="desc"><b>${s.full}</b> — ${s.desc}</div><button class="btn btn-ghost" style="padding:5px 10px;font-size:12px;border:1px solid var(--line)" onclick="AudioEngine.playString(${s.n})">🔊</button></div>`).join('')}</div>
+    <p>Decore em voz alta: <i>"Mi Lá Ré Sol Si Mi"</i>, tocando cada corda solta.</p>`},
+  f3:{title:'Postura das mãos', kicker:'Fundamentos · Aula 3', xp:15, body:()=>`
+    <p>As duas mãos têm papéis diferentes — é normal uma parecer mais difícil no começo.${state.leftHanded?' Como você marcou que é canhoto(a), as ilustrações abaixo já estão espelhadas.':''}</p>
+    <figure>${handPostureSVG('left')}<figcaption>Mão ${state.leftHanded?'direita':'esquerda'}: pressiona as cordas</figcaption></figure>
+    <p>Polegar atrás do braço, dedos curvados pressionando com a ponta, perto do trasteo de metal — nunca em cima dele.</p>
+    <figure>${handPostureSVG('right')}<figcaption>Mão ${state.leftHanded?'esquerda':'direita'}: toca/dedilha as cordas</figcaption></figure>`},
+  f4:{title:'Revisão rápida', kicker:'Fundamentos · Quiz', quiz:true, xp:20,
+    question:'Qual é o nome da corda mais grossa (6ª corda)?', options:['Lá','Mi','Sol','Ré'], correct:1,
+    explain:'A corda mais grossa é o Mi grave (6ª corda), mais próxima do seu queixo.'},
+  f5:{title:'Lendo um diagrama de acorde', kicker:'Fundamentos · Aula 4', xp:15, body:()=>`
+    <p>Quase todo material de violão usa o mesmo "mapa" para mostrar onde colocar os dedos.</p>
+    ${chordFigure('Em','Mi menor (Em)',1,[0,{fret:2,finger:2},{fret:2,finger:3},0,0,0],null,'Exemplo: diagrama do Em')}
+    <ul><li>Linhas verticais = cordas (grossa à esquerda, fina à direita).</li><li>Linhas horizontais = trastes; a mais grossa no topo é a pestana inicial.</li><li>Bolinhas = onde apoiar cada dedo (1=indicador...4=mindinho).</li><li>Corda sem bolinha = toca solta.</li></ul>`},
+  f6:{title:'Seu 1º acorde: Mi menor (Em)', kicker:'Fundamentos · Aula 5', xp:20, body:()=>`
+    <p>Em é o primeiro acorde ideal: usa só 2 dedos e soa bem mesmo com pequenos erros.</p>
+    ${chordFigure('Em','Mi menor (Em)',1,[0,{fret:2,finger:2},{fret:2,finger:3},0,0,0],null,'Posição do Em')}
+    <ol><li>Dedo 2 (médio) na 2ª casa da corda Lá.</li><li>Dedo 3 (anelar) na 2ª casa da corda Ré.</li><li>As outras 4 cordas ficam soltas.</li><li>Toque uma de cada vez e confira se soam limpas.</li></ol>`},
+  f7:{title:'Desafio final', kicker:'Fundamentos · Quiz', quiz:true, xp:25,
+    question:'No Em, quantas cordas ficam soltas (sem dedo)?', options:['2','3','4','Nenhuma'], correct:2,
+    explain:'Só 2 cordas recebem dedos (Lá e Ré); as outras 4 tocam soltas.'},
+
+  acor1:{title:'Acorde de Dó maior (C)', kicker:'Acordes · Aula 1', xp:15, body:()=>`
+    ${chordFigure('C','Dó maior (C)',1,['x',{fret:3,finger:3},{fret:2,finger:2},0,{fret:1,finger:1},0],null,'Posição do C')}
+    <p>Dedo 1 na 1ª casa da corda Si, dedo 2 na 2ª casa da corda Ré, dedo 3 na 3ª casa da corda Lá. A corda Mi grave (6ª) não é tocada.</p>
+    <p>Erro comum: deixar a corda Sol (solta) abafada sem querer com o dedo 3 — mantenha os dedos "em pé", nas pontas.</p>`},
+  acor2:{title:'Acorde de Sol maior (G)', kicker:'Acordes · Aula 2', xp:15, body:()=>`
+    ${chordFigure('G','Sol maior (G)',1,[{fret:3,finger:3},{fret:2,finger:2},0,0,0,{fret:3,finger:4}],null,'Posição do G')}
+    <p>Dedo 2 na 2ª casa da corda Lá, dedo 3 na 3ª casa da corda Mi grave, dedo 4 (mindinho) na 3ª casa da corda Mi aguda. As cordas Ré, Sol e Si soam soltas.</p>`},
+  acor3:{title:'Acorde de Ré maior (D)', kicker:'Acordes · Aula 3', xp:15, body:()=>`
+    ${chordFigure('D','Ré maior (D)',1,['x','x',0,{fret:2,finger:1},{fret:3,finger:3},{fret:2,finger:2}],null,'Posição do D')}
+    <p>Os dedos formam um pequeno "triângulo": dedo 1 na 2ª casa da corda Sol, dedo 2 na 2ª casa da corda Mi aguda, dedo 3 na 3ª casa da corda Si. As cordas graves (Mi e Lá) não tocam.</p>`},
+  acor4:{title:'Acorde de Lá menor (Am)', kicker:'Acordes · Aula 4', xp:15, body:()=>`
+    ${chordFigure('Am','Lá menor (Am)',1,['x',0,{fret:2,finger:2},{fret:2,finger:3},{fret:1,finger:1},0],null,'Posição do Am')}
+    <p>Parecido com o Em, mas "empurrado" uma corda para o lado: dedo 1 na 1ª casa da corda Si, dedos 2 e 3 na 2ª casa das cordas Ré e Sol.</p>`},
+  acor5:{title:'Reconhecendo acordes', kicker:'Acordes · Quiz', quiz:true, xp:20,
+    question:'No acorde de Sol (G) que você aprendeu, quantas cordas soam soltas (sem dedo)?', options:['1','2','3','4'], correct:2,
+    explain:'As cordas Ré, Sol e Si (3 cordas) ficam soltas; as outras 3 recebem dedos.'},
+  acor6:{title:'Trocando de acorde sem travar', kicker:'Acordes · Aula 5', xp:15, body:`
+    <p>A troca de acorde é o que mais trava o iniciante. Duas ideias resolvem quase tudo:</p>
+    <ul><li><b>Dedo-guia:</b> quando um dedo usa a mesma corda/posição em dois acordes seguidos, deixe-o parado e mova só os outros.</li><li><b>Movimento em bloco:</b> mova todos os dedos juntos, na mesma velocidade, em vez de um de cada vez.</li></ul>
+    <p>Pratique só a troca (sem tocar a música toda) em loop lento, indo e voltando entre 2 acordes, com metrônomo bem devagar.</p>`},
+  acor7:{title:'Desafio final', kicker:'Acordes · Quiz', quiz:true, xp:25,
+    question:'Qual estratégia ajuda mais a trocar de acorde rápido?', options:['Mover a mão inteira de uma vez, sem plano','Manter um dedo fixo quando possível (dedo-guia)','Apertar as cordas com mais força','Tocar a música sempre mais devagar, para sempre'], correct:1,
+    explain:'O dedo-guia reduz a distância que a mão precisa percorrer, tornando a troca mais rápida e confiável.'},
+
+  rit1:{title:'Contando os tempos (compasso 4/4)', kicker:'Ritmo · Aula 1', xp:15, body:`
+    <p>A maioria das músicas populares é organizada em grupos de 4 tempos (compasso 4/4). Bata o pé contando "1, 2, 3, 4" repetidamente, num ritmo constante.</p>
+    <p>Esse pulso é a régua de tudo: batidas, levadas e até a troca de acordes se encaixam nesses tempos.</p>`},
+  rit2:{title:'Batida para baixo (downstroke)', kicker:'Ritmo · Aula 2', xp:15, body:`
+    <p>É o movimento mais natural: a mão direita desce, tocando as cordas de cima para baixo (da mais grossa para a mais fina).</p>
+    <p>O movimento vem do pulso, não do braço inteiro — mantenha a mão relaxada, como se estivesse sacudindo água dos dedos.</p>`},
+  rit3:{title:'Batida para cima (upstroke)', kicker:'Ritmo · Aula 3', xp:15, body:`
+    <p>É o retorno: a mão sobe tocando as cordas de baixo para cima. Costuma ser mais leve e tocar menos cordas que a batida para baixo.</p>
+    <p>Tente alternar: para baixo, para cima, para baixo, para cima — sem parar o movimento do pulso, mesmo quando não encostar em todas as cordas.</p>`},
+  rit4:{title:'Contando movimentos', kicker:'Ritmo · Quiz', quiz:true, xp:20,
+    question:'Na levada "para baixo, para baixo, para cima, para cima, para baixo, para cima", quantos movimentos são para cima?', options:['1','2','3','4'], correct:2,
+    explain:'São 3 movimentos para cima no total dessa sequência.'},
+  rit5:{title:'Levada de balada', kicker:'Ritmo · Aula 4', xp:15, body:`
+    <p>Uma levada clássica e fácil de começar, usada em baladas e músicas mais lentas:</p>
+    <figure>${rhythmDiagram(['D','D','U','U','D','U'])}<figcaption>Para baixo, para baixo, para cima, para cima, para baixo, para cima</figcaption></figure>
+    <p>Pratique primeiro só o movimento da mão no ar, sem cordas, até ficar automático — depois aplique num acorde só (Em, por exemplo).</p>`},
+  rit6:{title:'Levada de MPB simples', kicker:'Ritmo · Aula 5', xp:15, body:`
+    <p>Uma levada mais "corrida", com movimentos alternando o tempo todo:</p>
+    <figure>${rhythmDiagram(['D','U','D','U','D','U'])}<figcaption>Alternando para baixo e para cima continuamente</figcaption></figure>
+    <p>O segredo é manter o pulso do braço constante, mesmo nos momentos em que a mão "passa de raspão" sem tocar todas as cordas.</p>`},
+  rit7:{title:'Desafio final', kicker:'Ritmo · Quiz', quiz:true, xp:25,
+    question:'Qual levada estudada tem os movimentos para baixo e para cima se alternando o tempo todo, sem repetição seguida?', options:['A levada de balada','A levada de MPB','Nenhuma das duas','As duas são idênticas'], correct:1,
+    explain:'A levada de MPB (D-U-D-U-D-U) alterna a cada movimento; a de balada repete (D-D-U-U-D-U).'},
+
+  rep1:{title:'Como ler uma cifra', kicker:'Repertório · Aula 1', xp:15, body:`
+    <p>Uma cifra mostra o nome do acorde exatamente acima da sílaba onde a troca acontece na letra da música.</p>
+    <p>Antes de tocar, é útil "ler" a cifra em voz alta, só dizendo os nomes dos acordes na ordem, para memorizar a sequência de trocas antes de se preocupar com o ritmo.</p>`},
+  rep2:{title:'Exercício: "Tarde de Domingo"', kicker:'Repertório · Aula 2', xp:15, body:`
+    <p>Uma frase de prática (letra e progressão originais, criadas só para treino) usando apenas Em e C:</p>
+    <p style="font-family:'Fraunces',serif; font-size:15px; line-height:2.1; text-align:center;">
+      <b>Em</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>C</b><br>
+      Sol na janela, o dia é assim<br>
+      <b>Em</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>C</b><br>
+      Uma canção pra não ter fim
+    </p>
+    <p>Troque de acorde exatamente na sílaba marcada. Comece só falando a letra no tempo certo, depois some o violão.</p>`},
+  rep3:{title:'Exercício: "Estrada Livre"', kicker:'Repertório · Aula 3', xp:15, body:`
+    <p>Agora com 3 acordes (letra original de prática):</p>
+    <p style="font-family:'Fraunces',serif; font-size:15px; line-height:2.1; text-align:center;">
+      <b>G</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>D</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Em</b><br>
+      A estrada segue e o vento chama<br>
+      <b>G</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>D</b><br>
+      Cada volta é uma nova trama
+    </p>
+    <p>Se travar numa troca específica, isole só esse trecho e repita devagar antes de tentar a frase inteira.</p>`},
+  rep4:{title:'Lendo a cifra', kicker:'Repertório · Quiz', quiz:true, xp:20,
+    question:'Numa cifra, quando exatamente você troca de acorde?', options:['No início da linha seguinte, sempre','Assim que a letra do acorde aparece acima da sílaba','Só no início de cada refrão','A cada 4 compassos, fixo'], correct:1,
+    explain:'A posição do acorde acima da letra indica o instante exato da troca.'},
+  rep5:{title:'Grave e compare', kicker:'Repertório · Aula 4', xp:15, body:`
+    <p>Grave um trecho curto no celular e ouça com atenção. É comum perceber problemas que não notamos tocando (cordas abafadas, ritmo acelerando sem querer).</p>
+    <p>Compare gravações da mesma semana entre si (não com músicos profissionais) — o objetivo é ver sua própria evolução.</p>`},
+  rep6:{title:'Adaptando a levada à música', kicker:'Repertório · Aula 5', xp:15, body:`
+    <p>Nem toda levada combina com toda música. Em músicas mais lentas, simplifique: use só batidas para baixo, uma por tempo, até dominar a troca de acordes — depois complete com as batidas para cima.</p>`},
+  rep7:{title:'Desafio final', kicker:'Repertório · Quiz', quiz:true, xp:25,
+    question:'Se uma música muda de acorde a cada 2 tempos e você está sempre atrasando a troca, o que ajuda mais?', options:['Tocar a música inteira mais rápido','Isolar a troca específica e repetir em loop bem devagar','Pular essa troca de acorde','Trocar a música por outra mais fácil'], correct:1,
+    explain:'Isolar o trecho difícil e repetir devagar constrói a memória muscular antes de tentar em velocidade real.'},
+
+  pest1:{title:'O que é pestana', kicker:'Pestana · Aula 1', xp:15, body:`
+    <p>Pestana é usar um dedo (geralmente o indicador) deitado, pressionando várias cordas ao mesmo tempo — como se o próprio dedo virasse a "pestana" (o suporte de metal/osso) do violão.</p>
+    <p>É normal doer e soar abafado nas primeiras semanas: o dedo ainda não tem força nem calo suficiente. Isso é treinável, não é falta de talento.</p>`},
+  pest2:{title:'Fortalecendo o indicador', kicker:'Pestana · Aula 2', xp:15, body:`
+    <p>Exercício simples: deite o indicador sobre todas as cordas na 1ª casa e apenas segure a pressão por 10 segundos, sem tocar nada — depois solte. Repita algumas vezes por dia.</p>
+    <p>Progresso em pestana é diário e gradual: alguns minutos por dia rendem mais que uma sessão longa e cansativa.</p>`},
+  pest3:{title:'Fá fácil (baby F)', kicker:'Pestana · Aula 3', xp:15, body:()=>`
+    ${chordFigure('babyF','Fá fácil (baby F)',1,['x','x',{fret:3,finger:3},{fret:2,finger:2},null,null],{fret:1,from:4,to:5,finger:1},'Versão reduzida do Fá, com pestana só nas 2 cordas mais finas')}
+    <p>Uma pestana pequena, só nas cordas Si e Mi aguda, na 1ª casa — ótimo primeiro contato com o movimento antes de tentar a pestana completa.</p>`},
+  pest4:{title:'Si7 (versão fácil do Si)', kicker:'Pestana · Aula 4', xp:15, body:()=>`
+    ${chordFigure('B7','Si7 (B7)',1,['x',{fret:2,finger:2},{fret:1,finger:1},{fret:2,finger:3},0,{fret:2,finger:4}],null,'Alternativa sem pestana para o acorde de Si')}
+    <p>O Si maior "de verdade" usa pestana na 2ª casa e é bem difícil no início. O Si7 soa parecido e é uma ótima substituição enquanto sua pestana evolui.</p>`},
+  pest5:{title:'Por que soa abafado?', kicker:'Pestana · Quiz', quiz:true, xp:20,
+    question:'Por que a pestana costuma soar abafada no início?', options:['O dedo não está reto o suficiente sobre as cordas','Falta pressão uniforme ao longo de todo o dedo','O polegar não está bem posicionado atrás do braço','Todas as alternativas acima'], correct:3,
+    explain:'Os três fatores juntos costumam causar o som abafado — por isso a pestana exige ajuste fino em vários pontos ao mesmo tempo.'},
+  pest6:{title:'Fá completo (pestana real)', kicker:'Pestana · Aula 5', xp:20, body:()=>`
+    ${chordFigure('fullF','Fá completo (F)',1,[null,{fret:3,finger:3},{fret:3,finger:4},{fret:2,finger:2},null,null],{fret:1,from:0,to:5,finger:1},'Pestana cobrindo as 6 cordas na 1ª casa')}
+    <p>Quando o baby F já estiver confortável, avance para essa versão completa: o indicador cobre as 6 cordas na 1ª casa, e os dedos 2, 3 e 4 formam o resto do acorde.</p>`},
+  pest7:{title:'Desafio final', kicker:'Pestana · Quiz', quiz:true, xp:25,
+    question:'Depois de dominar a pestana na 1ª casa, o que você pode fazer?', options:['Deslizar a mesma forma para qualquer casa e tocar outros acordes maiores','Só tocar Fá pelo resto da vida','Trocar de violão para um mais fácil','Usar capotraste sempre, em qualquer situação'], correct:0,
+    explain:'A pestana cria uma "forma móvel": deslizando-a pelo braço, você toca qualquer acorde maior — é a porta de entrada para os acordes "com pestana" em geral.'},
+
+  teo1:{title:'O que é uma escala', kicker:'Teoria · Aula 1', xp:15, body:`
+    <p>Uma escala é uma sequência específica de notas, separadas por uma combinação fixa de tons e semitons. A escala maior segue o padrão: tom-tom-semitom-tom-tom-tom-semitom.</p>
+    <p>A escala de Dó maior é a mais usada para começar porque não tem sustenidos nem bemóis — só as "teclas brancas" do piano, se você pensar em teclado.</p>`},
+  teo2:{title:'Escala de Dó maior na posição aberta', kicker:'Teoria · Aula 2', xp:15, body:`
+    <p>Uma forma clássica de tocar a escala de Dó maior usando as primeiras casas do violão:</p>
+    <table class="scaletable"><tr><th>Corda</th><th>Casa 0</th><th>Casa 1</th><th>Casa 2</th><th>Casa 3</th></tr>
+      <tr><td>Mi grave</td><td>E</td><td>F</td><td></td><td>G</td></tr>
+      <tr><td>Lá</td><td>A</td><td></td><td>B</td><td class="root">C</td></tr>
+      <tr><td>Ré</td><td>D</td><td></td><td>E</td><td>F</td></tr>
+      <tr><td>Sol</td><td>G</td><td></td><td>A</td><td></td></tr>
+      <tr><td>Si</td><td>B</td><td class="root">C</td><td></td><td>D</td></tr>
+      <tr><td>Mi aguda</td><td>E</td><td>F</td><td></td><td>G</td></tr>
+    </table>
+    <p>As casas destacadas em cobre são as notas "Dó" (a nota que dá nome à escala).</p>`},
+  teo3:{title:'Campo harmônico de Dó maior', kicker:'Teoria · Aula 3', xp:15, body:`
+    <p>O campo harmônico é a família de 7 acordes que "nasce" naturalmente de uma escala. Em Dó maior:</p>
+    <p style="text-align:center; font-family:'Fraunces',serif; font-size:15px;">C · Dm · Em · F · G · Am · B(dim)</p>
+    <p>Repare: C, Em, Am, G e F — todos os acordes que você já aprendeu — pertencem a essa família. É por isso que eles soam bem juntos em uma música.</p>`},
+  teo4:{title:'Identificando graus', kicker:'Teoria · Quiz', quiz:true, xp:20,
+    question:'No campo harmônico de Dó maior, qual grau é o acorde de Sol (G)?', options:['I (primeiro)','IV (quarto)','V (quinto)','vi (sexto)'], correct:2,
+    explain:'G é o 5º grau (V) do campo harmônico de Dó maior — uma das combinações mais comuns em progressões populares.'},
+  teo5:{title:'Montando uma progressão simples', kicker:'Teoria · Aula 4', xp:15, body:`
+    <p>Uma progressão muito comum, presente em incontáveis músicas de estilos variados, é a sequência de graus I-V-vi-IV — em Dó maior, isso vira: <b>C - G - Am - F</b>.</p>
+    <p>Pratique tocando essa sequência repetidamente, uma batida para baixo por acorde, até sentir o "ciclo" natural dela.</p>`},
+  teo6:{title:'Lendo cifras mais avançadas', kicker:'Teoria · Aula 5', xp:15, body:`
+    <p>Além dos acordes maiores e menores, cifras usam sufixos que mudam a "cor" do acorde:</p>
+    <ul><li><b>m</b> — menor (ex: Am)</li><li><b>7</b> — adiciona a sétima nota da escala ao acorde (ex: G7)</li><li><b>sus4</b> — substitui a terça por uma quarta, criando tensão</li><li><b>dim</b> — acorde diminuto, mais dissonante</li><li><b>maj7</b> — sétima maior, som mais "suave"</li></ul>`},
+  teo7:{title:'Desafio final', kicker:'Teoria · Quiz', quiz:true, xp:25,
+    question:'Na cifra "Am7", o que o "7" indica?', options:['Que o acorde deve ser tocado na 7ª casa','Que uma nota extra (a sétima) é adicionada ao acorde','Que são usados 7 dedos','Que o tom deve subir 7 vezes'], correct:1,
+    explain:'O número indica um grau extra adicionado ao acorde básico — nesse caso, a sétima nota da escala.'},
+
+  avan1:{title:'Introdução ao arpejo', kicker:'Avançado · Aula 1', xp:15, body:`
+    <p>Arpejo é tocar as notas de um acorde uma de cada vez (em vez de todas juntas, como numa batida). Isso cria um som mais melódico e delicado.</p>
+    <p>Na técnica clássica de dedilhado, cada dedo tem uma função fixa: <b>p</b> (polegar) toca as cordas graves, <b>i</b> (indicador), <b>m</b> (médio) e <b>a</b> (anelar) tocam as cordas agudas.</p>
+    <div class="picking-row"><div class="picking-chip">p</div><div class="picking-chip">i</div><div class="picking-chip">m</div><div class="picking-chip">a</div></div>`},
+  avan2:{title:'Padrão de arpejo p-i-m-a', kicker:'Avançado · Aula 2', xp:15, body:`
+    <p>Um padrão clássico para começar, tocado sobre um acorde só (experimente com Em ou C):</p>
+    <div class="picking-row">${['p','i','m','a','m','i'].map(l=>`<div class="picking-chip">${l}</div>`).join('')}</div>
+    <p>Toque bem devagar com metrônomo, repetindo o ciclo continuamente, até os dedos "decorarem" a sequência sozinhos.</p>`},
+  avan3:{title:'Introdução ao fingerstyle', kicker:'Avançado · Aula 3', xp:15, body:`
+    <p>Fingerstyle é tocar baixo, harmonia e melodia ao mesmo tempo com os dedos — como se fosse "uma banda inteira" num violão só.</p>
+    <p>O primeiro passo é separar as funções: o polegar mantém um baixo constante e simples, enquanto os outros dedos tocam por cima, no seu próprio tempo.</p>`},
+  avan4:{title:'Percussão no tampo', kicker:'Avançado · Aula 4', xp:15, body:`
+    <p>Muitos violonistas usam o corpo do violão como um instrumento de percussão extra, batendo levemente no tampo com a lateral da mão ou os dedos entre os dedilhados.</p>
+    <p>Comece simples: uma batida percussiva no tampo a cada 4 tempos, sem se preocupar ainda em combinar com o dedilhado.</p>`},
+  avan5:{title:'Qual dedo faz o quê?', kicker:'Avançado · Quiz', quiz:true, xp:20,
+    question:'No padrão p-i-m-a, qual dedo toca as cordas graves (6ª, 5ª e 4ª)?', options:['Polegar (p)','Indicador (i)','Médio (m)','Anelar (a)'], correct:0,
+    explain:'O polegar (p) é responsável pelas cordas graves; os outros três dedos cobrem as cordas agudas.'},
+  avan6:{title:'Independência dos dedos', kicker:'Avançado · Aula 5', xp:15, body:`
+    <p>Exercício: com metrônomo bem lento, toque só o polegar marcando um baixo constante, e depois de alguns compassos some apenas o indicador tocando notas soltas por cima, sem alterar o baixo.</p>
+    <p>É normal os dois "se puxarem" no início. Vá aumentando a velocidade só quando a independência estiver estável.</p>`},
+  avan7:{title:'Trilha completa!', kicker:'Avançado · Quiz final', quiz:true, xp:30,
+    question:'Voltando ao início da sua jornada: qual foi o seu primeiro acorde na trilha?', options:['Dó (C)','Sol (G)','Mi menor (Em)','Ré (D)'], correct:2,
+    explain:'Em (Mi menor) foi o primeiro acorde — e olha até onde você chegou desde então. 🎉 Parabéns por completar a trilha inteira!'},
+};
+
+/* ================= ESTADO + PERSISTÊNCIA ================= */
+let state = { xp:0, completed:new Set(), streak:1, freezes:1, earnedBadges:new Set(), name:'', guestMode:false, syncWarned:false, highContrast:false, leftHanded:false, uid:null, turmaCode:'' };
+const STORAGE_KEY = 'trastes_profile';
+
+function levelFromXp(xp){ return Math.floor(xp/100)+1; }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// Detecta automaticamente onde o app está rodando e escolhe o melhor
+// armazenamento disponível: nuvem do Claude.ai (aqui no chat) ou localStorage
+// do navegador (quando o arquivo é hospedado/aberto fora do Claude.ai).
+const Backend = (function(){
+  const hasCloud = typeof window.storage !== 'undefined';
+  let hasLocal = false;
+  try{ const k='__trastes_probe__'; localStorage.setItem(k,'1'); localStorage.removeItem(k); hasLocal = true; }
+  catch(e){ hasLocal = false; }
+  return { hasCloud, hasLocal };
+})();
+
+async function storageGet(key){
+  if(Backend.hasCloud){ const res = await window.storage.get(key, false); return res && res.value ? res.value : null; }
+  if(Backend.hasLocal){ return localStorage.getItem(key); }
+  throw new Error('Nenhum armazenamento disponível neste ambiente');
+}
+async function storageSet(key, value){
+  if(Backend.hasCloud){ await window.storage.set(key, value, false); return; }
+  if(Backend.hasLocal){ localStorage.setItem(key, value); return; }
+  throw new Error('Nenhum armazenamento disponível neste ambiente');
+}
+async function storageDelete(key){
+  if(Backend.hasCloud){ try{ await window.storage.delete(key, false); }catch(e){} return; }
+  if(Backend.hasLocal){ localStorage.removeItem(key); return; }
+}
+
+// Tenta uma operação de storage algumas vezes antes de desistir —
+// falhas de "Internal server error" na nuvem costumam ser transitórias;
+// localStorage raramente falha, então as tentativas extras não custam nada.
+async function withRetries(fn, attempts=3, baseDelay=450){
+  let lastErr;
+  for(let i=0;i<attempts;i++){
+    try{ return await fn(); }
+    catch(e){ lastErr = e; if(i<attempts-1) await sleep(baseDelay*(i+1)); }
+  }
+  throw lastErr;
+}
+
+// Lança se não conseguir ler após as tentativas — quem chama decide o que fazer.
+// (Não tratamos erro como "perfil inexistente": isso evitaria confundir uma
+// falha temporária com um usuário novo, o que apagaria progresso real.)
+async function loadProfile(){
+  return await withRetries(async ()=>{
+    const raw = await storageGet(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }, 3, 450);
+}
+
+async function saveProfile(){
+  if(state.guestMode) return;
+  const payload = { name: state.name, xp: state.xp, completed:[...state.completed], streak: state.streak, freezes: state.freezes, earnedBadges:[...state.earnedBadges], highContrast: state.highContrast, leftHanded: state.leftHanded, uid: state.uid, turmaCode: state.turmaCode, lastActiveDate: todayStr() };
+  try{
+    await withRetries(()=> storageSet(STORAGE_KEY, JSON.stringify(payload)), 2, 500);
+    if(Backend.hasCloud) await withRetries(()=> window.storage.set('leaderboard:'+state.uid, JSON.stringify({name:state.name, xp:state.xp, streak:state.streak}), true), 1, 300).catch(()=>{});
+  }catch(e){
+    console.error('Falha ao salvar progresso', e);
+    if(!state.syncWarned){
+      state.syncWarned = true;
+      showToast('Progresso mantido nesta sessão — armazenamento indisponível agora');
+    }
+  }
+}
+
+async function resetProfile(){
+  if(!confirm('Isso apaga o progresso salvo e cria um novo perfil. Continuar?')) return;
+  if(!state.guestMode){ await storageDelete(STORAGE_KEY); }
+  location.reload();
+}
+
+function showOnboarding(){
+  const overlay = document.getElementById('overlay');
+  const modal = document.getElementById('modal');
+  const note = state.guestMode
+    ? '<p style="color:#a83c32">A sincronização não está disponível agora — seu progresso vai valer só para esta sessão.</p>'
+    : '<p>Seu progresso fica salvo automaticamente neste perfil, mesmo se você fechar a aba.</p>';
+  modal.innerHTML = `
+    <div class="kicker">Bem-vindo(a)</div>
+    <h2>Como podemos te chamar?</h2>
+    <div class="body">${note}
+      <input id="nameInput" class="onboard-input" placeholder="Seu nome" maxlength="30"/>
+    </div>
+    <div class="modal-footer"><button class="btn btn-primary" id="startBtn">Começar minha trilha</button></div>`;
+  overlay.classList.add('open');
+  const input = document.getElementById('nameInput');
+  input.focus();
+  const start = async ()=>{
+    const name = input.value.trim() || 'Violonista';
+    state.name = name; state.xp=0; state.completed=new Set(); state.streak=1; state.freezes=1; state.earnedBadges=new Set();
+    state.uid = state.uid || (crypto.randomUUID ? crypto.randomUUID() : 'u'+Date.now()+Math.random().toString(36).slice(2));
+    await saveProfile();
+    document.getElementById('overlay').classList.remove('open');
+    renderAll();
+  };
+  document.getElementById('startBtn').addEventListener('click', start);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') start(); });
+}
+
+function showLoadErrorScreen(){
+  const overlay = document.getElementById('overlay');
+  const modal = document.getElementById('modal');
+  modal.innerHTML = `
+    <div class="kicker">Ops</div>
+    <h2>Não conseguimos carregar seu progresso agora</h2>
+    <div class="body"><p>Isso costuma ser temporário (instabilidade no armazenamento). Você pode tentar de novo, ou começar um novo perfil — só faça isso se tiver certeza de que nunca usou o app neste dispositivo, para não sobrescrever um progresso salvo por engano.</p></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="freshBtn">Começar do zero mesmo assim</button>
+      <button class="btn btn-primary" id="retryBtn">Tentar novamente</button>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('retryBtn').addEventListener('click', ()=>{ overlay.classList.remove('open'); init(); });
+  document.getElementById('freshBtn').addEventListener('click', ()=>{ overlay.classList.remove('open'); showOnboarding(); });
+}
+
+function updateStreak(profile){
+  const today = todayStr();
+  state.freezes = profile.freezes ?? 1;
+  if(!profile.lastActiveDate){ state.streak = 1; }
+  else if(profile.lastActiveDate === today){ state.streak = profile.streak || 1; }
+  else{
+    const diffDays = Math.round((new Date(today) - new Date(profile.lastActiveDate)) / 86400000);
+    if(diffDays === 1){ state.streak = (profile.streak||1)+1; }
+    else if(diffDays === 2 && state.freezes > 0){
+      state.freezes -= 1; state.streak = (profile.streak||1)+1;
+      setTimeout(()=>showToast('❄️ Sua sequência foi protegida com um congelamento'), 600);
+    } else { state.streak = 1; }
+  }
+  // ganha 1 congelamento novo a cada marco de 7 dias de sequência (máx. 2 guardados)
+  if(state.streak>0 && state.streak % 7 === 0 && state.freezes < 2 && state.streak !== (profile.streak||0)){
+    state.freezes += 1;
+  }
+}
+
+async function init(){
+  if(!Backend.hasCloud && !Backend.hasLocal){
+    state.guestMode = true;
+    showOnboarding();
+    return;
+  }
+  let profile;
+  try{
+    profile = await loadProfile();
+  }catch(e){
+    console.error('Não foi possível carregar o perfil após várias tentativas', e);
+    showLoadErrorScreen();
+    return;
+  }
+  if(!profile){ showOnboarding(); return; }
+  state.name = profile.name || 'Violonista';
+  state.xp = profile.xp || 0;
+  state.completed = new Set(profile.completed || []);
+  state.earnedBadges = new Set(profile.earnedBadges || []);
+  state.highContrast = !!profile.highContrast;
+  state.leftHanded = !!profile.leftHanded;
+  state.uid = profile.uid || (crypto.randomUUID ? crypto.randomUUID() : 'u'+Date.now());
+  state.turmaCode = profile.turmaCode || '';
+  updateStreak(profile);
+  await saveProfile();
+  applyVisualPrefs();
+  state.currentModule = 'fundamentos';
+  renderAll();
+  checkBadges();
+}
+
+/* ================= RENDER ================= */
+function moduleUnlocked(idx){
+  if(idx===0) return true;
+  const prev = MODULES[idx-1];
+  return prev.nodes.every(n=>state.completed.has(n.id));
+}
+function renderSidebar(){
+  document.getElementById('profileChip').style.display = state.name ? 'flex' : 'none';
+  document.getElementById('profileName').textContent = '👤 '+state.name;
+  const ul = document.getElementById('modlist'); ul.innerHTML = '';
+  MODULES.forEach((m,idx)=>{
+    const unlocked = moduleUnlocked(idx);
+    const doneCount = m.nodes.filter(n=>state.completed.has(n.id)).length;
+    const li = document.createElement('li');
+    li.innerHTML = `<button class="${state.currentModule===m.id?'active':''}" data-mod="${m.id}">
+        <span class="dot"></span> ${m.icon} ${m.title}
+        <span class="prog">${unlocked ? doneCount+'/'+m.nodes.length : '🔒'}</span>
+      </button>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{ state.currentModule=b.dataset.mod; renderAll(); }));
+}
+function renderStats(){
+  document.getElementById('xpVal').textContent = state.xp;
+  document.getElementById('streakVal').textContent = state.streak;
+  const lvl = levelFromXp(state.xp);
+  document.getElementById('levelVal').textContent = lvl;
+  const base=(lvl-1)*100, pct=Math.min(100, ((state.xp-base)/100)*100);
+  document.getElementById('xpMaxVal').textContent = lvl*100;
+  document.getElementById('xpbar').style.width = pct+'%';
+}
+function renderAll(){
+  renderSidebar(); renderStats();
+  const main = document.getElementById('mainArea'); main.innerHTML='';
+  const idx = MODULES.findIndex(m=>m.id===state.currentModule);
+  const mod = MODULES[idx];
+  const unlocked = moduleUnlocked(idx);
+  main.innerHTML += `<div class="hero"><h1>${mod.icon} ${mod.title}</h1><p>${mod.desc}</p></div>`;
+  if(!unlocked){
+    main.innerHTML += `<div class="locked-module"><span class="badge">Bloqueado</span><h3>Conclua o módulo anterior primeiro</h3><p>Assim que você completar todos os passos do módulo anterior, este se abre automaticamente.</p>
+      <button class="btn btn-primary" onclick="skipModuleTest(${idx-1})">Já manda bem nisso? Fazer teste de nível</button></div>`;
+    return;
+  }
+  main.appendChild(renderTrilha(mod.nodes));
+}
+function renderTrilha(nodes){
+  const wrap = document.createElement('div'); wrap.className='trilha';
+  const positions = ['center','right','left','center','right','left','center'];
+  nodes.forEach((node,i)=>{
+    if(i>0) wrap.appendChild(Object.assign(document.createElement('div'),{className:'connector'}));
+    const row = document.createElement('div'); row.className = 'node-row '+positions[i%positions.length];
+    const done = state.completed.has(node.id);
+    const prevDone = i===0 || state.completed.has(nodes[i-1].id);
+    const locked = !done && !prevDone;
+    const btn = document.createElement('button');
+    btn.className = `node ${node.type==='quiz'?'quiz':''} ${done?'done':(locked?'locked':'available')}`;
+    btn.innerHTML = `<span class="ic">${done?'✓':node.icon}</span><span class="node-label">${node.title}</span>`;
+    if(locked){ btn.disabled = true; btn.setAttribute('aria-disabled','true'); }
+    else btn.addEventListener('click', ()=>openLesson(node.id));
+    btn.setAttribute('aria-label', `${node.title}${done?' (concluído)':locked?' (bloqueado)':''}`);
+    row.appendChild(btn); wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+/* ================= MODAL / LIÇÕES ================= */
+function openLesson(id){
+  const lesson = LESSONS[id];
+  const overlay = document.getElementById('overlay'), modal = document.getElementById('modal');
+  const alreadyDone = state.completed.has(id);
+  if(lesson.quiz){
+    modal.innerHTML = `<button class="close" onclick="closeModal()">✕</button>
+      <div class="kicker">${lesson.kicker}</div><h2>${lesson.title}</h2>
+      <div class="body"><p>${lesson.question}</p>
+        <div id="quizOpts">${lesson.options.map((o,i)=>`<button class="quiz-opt" data-i="${i}">${o}</button>`).join('')}</div>
+        <div class="quiz-feedback" id="quizFeedback"></div></div>
+      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
+        <button class="btn btn-primary" id="quizDone" style="display:none" onclick="completeLesson('${id}')">Continuar (+${lesson.xp} XP)</button></div>`;
+    overlay.classList.add('open');
+    modal.querySelectorAll('.quiz-opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.dataset.i);
+        modal.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+        const fb = document.getElementById('quizFeedback');
+        if(i===lesson.correct){ btn.classList.add('correct'); fb.style.color='var(--moss)'; fb.textContent='Isso aí! '+lesson.explain; }
+        else{ btn.classList.add('wrong'); modal.querySelectorAll('.quiz-opt')[lesson.correct].classList.add('correct'); fb.style.color='#a83c32'; fb.textContent='Quase! '+lesson.explain; }
+        document.getElementById('quizDone').style.display='inline-block';
+      });
+    });
+  } else {
+    const bodyHtml = typeof lesson.body === 'function' ? lesson.body() : lesson.body;
+    modal.innerHTML = `<button class="close" onclick="closeModal()">✕</button>
+      <div class="kicker">${lesson.kicker}</div><h2>${lesson.title}</h2>
+      <div class="body">${bodyHtml}</div>
+      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
+        <button class="btn btn-primary" onclick="completeLesson('${id}')">${alreadyDone?'Revisado':'Concluir'}${alreadyDone?'':' (+'+lesson.xp+' XP)'}</button></div>`;
+    overlay.classList.add('open');
+  }
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+
+/* ================= TRILHA ALTERNATIVA: teste de nível para pular módulo ================= */
+function skipModuleTest(prevIdx){
+  const prevMod = MODULES[prevIdx];
+  const lastNode = prevMod.nodes[prevMod.nodes.length-1];
+  const lesson = LESSONS[lastNode.id];
+  const overlay = document.getElementById('overlay'), modal = document.getElementById('modal');
+  modal.innerHTML = `<button class="close" onclick="closeModal()">✕</button>
+    <div class="kicker">Teste de nível · ${prevMod.title}</div><h2>${lesson.title}</h2>
+    <div class="body"><p style="font-size:12px;color:#8a7358">Acertando, o módulo inteiro "${prevMod.title}" é marcado como concluído (com XP completo) e o próximo se destrava.</p>
+      <p>${lesson.question}</p>
+      <div id="quizOpts">${lesson.options.map((o,i)=>`<button class="quiz-opt" data-i="${i}">${o}</button>`).join('')}</div>
+      <div class="quiz-feedback" id="quizFeedback"></div></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="skipDone" style="display:none" onclick="confirmSkip(${prevIdx})">Concluir módulo</button></div>`;
+  overlay.classList.add('open');
+  modal.querySelectorAll('.quiz-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const i = parseInt(btn.dataset.i);
+      modal.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+      const fb = document.getElementById('quizFeedback');
+      if(i===lesson.correct){
+        btn.classList.add('correct'); fb.style.color='var(--moss)'; fb.textContent='Mandou bem! '+lesson.explain;
+        document.getElementById('skipDone').style.display='inline-block';
+      } else {
+        btn.classList.add('wrong'); modal.querySelectorAll('.quiz-opt')[lesson.correct].classList.add('correct');
+        fb.style.color='#a83c32'; fb.textContent='Não foi dessa vez — '+lesson.explain+' Vale seguir o módulo passo a passo.';
+      }
+    });
+  });
+}
+async function confirmSkip(prevIdx){
+  const prevMod = MODULES[prevIdx];
+  let gainedXp = 0;
+  prevMod.nodes.forEach(n=>{ if(!state.completed.has(n.id)){ state.completed.add(n.id); gainedXp += LESSONS[n.id].xp; } });
+  state.xp += gainedXp;
+  await saveProfile();
+  closeModal();
+  showToast(`Módulo "${prevMod.title}" concluído por teste de nível! +${gainedXp} XP`);
+  renderAll();
+  setTimeout(checkBadges, 900);
+}
+
+async function completeLesson(id){
+  const lesson = LESSONS[id];
+  const wasNew = !state.completed.has(id);
+  state.completed.add(id);
+  if(wasNew){
+    state.xp += lesson.xp;
+    showToast(`+${lesson.xp} XP — ${lesson.title} concluída!`);
+    await saveProfile();
+    setTimeout(checkBadges, 900); // depois do toast de XP, pra não sobrepor
+  }
+  closeModal(); renderAll();
+}
+function showToast(msg){
+  const t = document.getElementById('toast'); t.textContent='🎉 '+msg; t.classList.add('show');
+  clearTimeout(window._toastTimer); window._toastTimer=setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ================= CONQUISTAS ================= */
+const BADGES = [
+  {id:'primeiro_acorde', title:'Primeiro acorde', icon:'🎶', test: s=> s.completed.has('f6')},
+  {id:'fundamentos_completo', title:'Fundamentos completos', icon:'🎸', test: s=> MODULES[0].nodes.every(n=>s.completed.has(n.id))},
+  {id:'quatro_acordes', title:'Quatro acordes na manga', icon:'🤚', test: s=> ['acor1','acor2','acor3','acor4'].every(id=>s.completed.has(id))},
+  {id:'no_ritmo', title:'No ritmo certo', icon:'🥁', test: s=> MODULES[2].nodes.every(n=>s.completed.has(n.id))},
+  {id:'pestana_domada', title:'Pestana domada', icon:'🪵', test: s=> s.completed.has('pest7')},
+  {id:'teoria_ok', title:'Base teórica', icon:'🎼', test: s=> MODULES[5].nodes.every(n=>s.completed.has(n.id))},
+  {id:'sequencia_7', title:'7 dias seguidos', icon:'🔥', test: s=> s.streak>=7},
+  {id:'trilha_completa', title:'Trilha completa', icon:'🏆', test: s=> MODULES.every(m=>m.nodes.every(n=>s.completed.has(n.id)))},
+];
+function checkBadges(){
+  let newOnes = [];
+  BADGES.forEach(b=>{
+    if(!state.earnedBadges.has(b.id) && b.test(state)){ state.earnedBadges.add(b.id); newOnes.push(b); }
+  });
+  if(newOnes.length){
+    saveProfile();
+    newOnes.forEach((b,i)=> setTimeout(()=>showToast(`🏅 Nova conquista: ${b.title}`), i*2800));
+  }
+}
+function toggleBadges(){
+  const panel = document.getElementById('badgesPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    document.getElementById('badgeGrid').innerHTML = BADGES.map(b=>{
+      const has = state.earnedBadges.has(b.id);
+      return `<div class="badge-item ${has?'':'locked'}"><div class="bicon">${has?b.icon:'🔒'}</div><div class="btitle">${b.title}</div></div>`;
+    }).join('');
+  }
+}
+
+/* ================= METRÔNOMO ================= */
+let metro = { bpm:80, playing:false, timerId:null, beat:0 };
+document.getElementById('bpmRange').addEventListener('input', e=>{
+  metro.bpm = parseInt(e.target.value);
+  document.getElementById('bpmVal').textContent = metro.bpm;
+  if(metro.playing){ stopMetronomeTimer(); startMetronomeTimer(); }
+});
+function toggleMetronomePanel(){ document.getElementById('metroPanel').classList.toggle('open'); }
+function toggleMetronome(){
+  metro.playing = !metro.playing;
+  document.getElementById('metroToggleBtn').textContent = metro.playing ? 'Parar' : 'Iniciar';
+  if(metro.playing) startMetronomeTimer(); else stopMetronomeTimer();
+}
+function startMetronomeTimer(){
+  metro.beat = 0;
+  const interval = 60000/metro.bpm;
+  tickMetronome();
+  metro.timerId = setInterval(tickMetronome, interval);
+}
+function stopMetronomeTimer(){ clearInterval(metro.timerId); metro.timerId=null; document.getElementById('metroDot').classList.remove('beat'); }
+function tickMetronome(){
+  AudioEngine.playClick(metro.beat % 4 === 0);
+  const dot = document.getElementById('metroDot');
+  dot.classList.add('beat'); setTimeout(()=>dot.classList.remove('beat'), 90);
+  metro.beat++;
+}
+
+/* ================= AFINADOR ================= */
+let tuner = { running:false, stream:null, analyser:null };
+const OPEN_STRING_TARGETS = [
+  {label:'6ª (Mi grave)', freq:82.41}, {label:'5ª (Lá)', freq:110.00}, {label:'4ª (Ré)', freq:146.83},
+  {label:'3ª (Sol)', freq:196.00}, {label:'2ª (Si)', freq:246.94}, {label:'1ª (Mi agudo)', freq:329.63},
+];
+function toggleTunerPanel(){
+  document.getElementById('tunerPanel').classList.toggle('open');
+  if(!document.getElementById('tunerPanel').classList.contains('open') && tuner.running) toggleTuner();
+}
+async function toggleTuner(){
+  if(tuner.running){ stopTuner(); document.getElementById('tunerToggleBtn').textContent='Ativar microfone'; return; }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const ctx = AudioEngine.ensureCtx();
+    const source = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser(); analyser.fftSize = 2048;
+    source.connect(analyser);
+    tuner.stream = stream; tuner.analyser = analyser; tuner.running = true;
+    document.getElementById('tunerToggleBtn').textContent = 'Parar';
+    requestAnimationFrame(tunerLoop);
+  }catch(e){ showToast('Não foi possível acessar o microfone'); }
+}
+function stopTuner(){
+  tuner.running = false;
+  if(tuner.stream) tuner.stream.getTracks().forEach(t=>t.stop());
+  document.getElementById('tunerNote').textContent = '—';
+  document.getElementById('tunerCents').textContent = 'Toque uma corda';
+  document.getElementById('tunerNeedle').style.left = '50%';
+}
+function autoCorrelate(buf, sampleRate){
+  const SIZE = buf.length;
+  let rms = 0;
+  for(let i=0;i<SIZE;i++) rms += buf[i]*buf[i];
+  rms = Math.sqrt(rms/SIZE);
+  if(rms < 0.01) return -1;
+  let r1=0, r2=SIZE-1; const thres=0.2;
+  for(let i=0;i<SIZE/2;i++){ if(Math.abs(buf[i])<thres){ r1=i; break; } }
+  for(let i=1;i<SIZE/2;i++){ if(Math.abs(buf[SIZE-i])<thres){ r2=SIZE-i; break; } }
+  const trimmed = buf.slice(r1,r2);
+  const n = trimmed.length;
+  const c = new Array(n).fill(0);
+  for(let lag=0; lag<n; lag++){ for(let i=0;i<n-lag;i++){ c[lag] += trimmed[i]*trimmed[i+lag]; } }
+  let d=0; while(d<n-1 && c[d]>c[d+1]) d++;
+  let maxVal=-1, maxPos=-1;
+  for(let i=d;i<n;i++){ if(c[i]>maxVal){ maxVal=c[i]; maxPos=i; } }
+  let T0 = maxPos;
+  if(T0<=0) return -1;
+  const x1=c[T0-1]!==undefined?c[T0-1]:c[T0], x2=c[T0], x3=c[T0+1]!==undefined?c[T0+1]:c[T0];
+  const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
+  if(a) T0 = T0 - b/(2*a);
+  return sampleRate/T0;
+}
+function freqToNote(freq){
+  const names=['Dó','Dó#','Ré','Ré#','Mi','Fá','Fá#','Sol','Sol#','Lá','Lá#','Si'];
+  const midi = 69 + 12*Math.log2(freq/440);
+  const rounded = Math.round(midi);
+  const cents = Math.round((midi-rounded)*100);
+  return { note: names[((rounded%12)+12)%12], cents };
+}
+function tunerLoop(){
+  if(!tuner.running) return;
+  const buf = new Float32Array(tuner.analyser.fftSize);
+  tuner.analyser.getFloatTimeDomainData(buf);
+  const freq = autoCorrelate(buf, AudioEngine.ensureCtx().sampleRate);
+  if(freq>0){
+    const {note, cents} = freqToNote(freq);
+    document.getElementById('tunerNote').textContent = note;
+    const clamped = Math.max(-50, Math.min(50, cents));
+    document.getElementById('tunerNeedle').style.left = (50 + clamped) + '%';
+    const closest = OPEN_STRING_TARGETS.reduce((a,b)=> Math.abs(12*Math.log2(freq/b.freq)) < Math.abs(12*Math.log2(freq/a.freq)) ? b : a);
+    document.getElementById('tunerCents').textContent = `${cents>0?'+':''}${cents} cents · mais perto de: ${closest.label}`;
+  }
+  requestAnimationFrame(tunerLoop);
+}
+
+/* ================= CONFIGURAÇÕES (contraste, canhoto) ================= */
+function applyVisualPrefs(){
+  document.body.classList.toggle('high-contrast', state.highContrast);
+}
+function toggleSettingsPanel(){
+  const panel = document.getElementById('settingsPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    document.getElementById('chkContrast').checked = state.highContrast;
+    document.getElementById('chkLefty').checked = state.leftHanded;
+  }
+}
+async function toggleHighContrast(checked){ state.highContrast = checked; applyVisualPrefs(); await saveProfile(); }
+async function toggleLeftHanded(checked){ state.leftHanded = checked; await saveProfile(); showToast(checked?'Modo canhoto ativado — diagramas espelhados nas próximas aulas abertas':'Modo canhoto desativado'); }
+
+/* ================= RANKING ENTRE AMIGOS (armazenamento compartilhado) ================= */
+async function toggleRankingPanel(){
+  const panel = document.getElementById('rankingPanel');
+  panel.classList.toggle('open');
+  if(!panel.classList.contains('open')) return;
+  const body = document.getElementById('rankingBody');
+  if(!Backend.hasCloud){
+    body.innerHTML = '<p style="font-size:12.5px; color:#8a7358">O ranking usa o armazenamento compartilhado do Claude.ai — disponível só quando o app roda por aqui, não numa hospedagem própria.</p>';
+    return;
+  }
+  body.innerHTML = '<p style="font-size:12.5px; color:#8a7358">Carregando…</p>';
+  try{
+    const list = await window.storage.list('leaderboard:', true);
+    const keys = (list && list.keys) || [];
+    const entries = [];
+    for(const k of keys.slice(0,30)){
+      try{ const r = await window.storage.get(k, true); if(r && r.value) entries.push(JSON.parse(r.value)); }catch(e){}
+    }
+    entries.sort((a,b)=> (b.xp||0)-(a.xp||0));
+    if(!entries.length){ body.innerHTML = '<p style="font-size:12.5px; color:#8a7358">Ninguém no ranking ainda — seja o primeiro!</p>'; return; }
+    body.innerHTML = `<p style="font-size:11px; color:#8a7358; margin-bottom:8px">Seu nome e XP ficam visíveis para outras pessoas que usam este app.</p>` +
+      entries.slice(0,10).map((e,i)=>`<div class="rank-row"><span class="pos">${i+1}º</span><span class="rname">${e.name||'Violonista'}</span><span class="rxp">${e.xp||0} XP</span></div>`).join('');
+  }catch(e){ body.innerHTML = '<p style="font-size:12.5px; color:#a83c32">Não foi possível carregar o ranking agora.</p>'; }
+}
+
+/* ================= MODO TURMA / PROFESSOR ================= */
+// Aproximação prática de "várias contas com um professor acompanhando":
+// usa o mesmo armazenamento compartilhado, agrupado por um código de turma.
+// Importante: isso NÃO é autenticação de verdade (sem senha) — qualquer pessoa
+// com o código vê a turma. Para uso com dados sensíveis/avaliativos, o caminho
+// correto é um backend com login real.
+function toggleTurmaPanel(){
+  const panel = document.getElementById('turmaPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')) renderTurmaPanel();
+}
+function renderTurmaPanel(){
+  const body = document.getElementById('turmaBody');
+  if(!Backend.hasCloud){
+    body.innerHTML = '<p style="font-size:12.5px; color:#8a7358">O modo turma usa o armazenamento compartilhado do Claude.ai — disponível só quando o app roda por aqui.</p>';
+    return;
+  }
+  body.innerHTML = `
+    <p style="font-size:11.5px; color:#a83c32; margin-bottom:10px">⚠️ Não é um login seguro — qualquer pessoa com o código vê a turma. Não use para notas ou dados sensíveis.</p>
+    <input id="turmaInput" class="onboard-input" style="margin:0 0 10px" placeholder="Código da turma (ex: violao-terca)" value="${state.turmaCode||''}"/>
+    <button class="btn btn-primary" style="width:100%; margin-bottom:8px" onclick="joinTurma()">Entrar / criar turma como aluno</button>
+    <button class="btn btn-ghost" style="width:100%; border:1px solid var(--line)" onclick="viewTurma()">Ver como professor(a)</button>
+    <div id="turmaRoster" style="margin-top:14px"></div>`;
+}
+async function joinTurma(){
+  const code = document.getElementById('turmaInput').value.trim().toLowerCase().replace(/\s+/g,'-');
+  if(!code) return;
+  state.turmaCode = code;
+  await saveProfile();
+  try{
+    await window.storage.set('turma:'+code+':'+state.uid, JSON.stringify({name:state.name, xp:state.xp, streak:state.streak, completedCount:state.completed.size}), true);
+    showToast('Você entrou na turma "'+code+'"');
+  }catch(e){ showToast('Não foi possível entrar na turma agora'); }
+}
+async function viewTurma(){
+  const code = document.getElementById('turmaInput').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const roster = document.getElementById('turmaRoster');
+  if(!code){ roster.innerHTML=''; return; }
+  roster.innerHTML = '<p style="font-size:12.5px; color:#8a7358">Carregando turma…</p>';
+  try{
+    const list = await window.storage.list('turma:'+code+':', true);
+    const keys = (list && list.keys) || [];
+    if(!keys.length){ roster.innerHTML = '<p style="font-size:12.5px; color:#8a7358">Nenhum aluno nessa turma ainda.</p>'; return; }
+    const students = [];
+    for(const k of keys){ try{ const r = await window.storage.get(k, true); if(r && r.value) students.push(JSON.parse(r.value)); }catch(e){} }
+    students.sort((a,b)=>(b.xp||0)-(a.xp||0));
+    roster.innerHTML = `<p style="font-size:11.5px; font-weight:600; color:var(--rosewood); margin-bottom:6px">${students.length} aluno(s) na turma "${code}"</p>` +
+      students.map(s=>`<div class="rank-row"><span class="rname">${s.name||'Violonista'}</span><span class="rxp">${s.completedCount||0} lições · ${s.xp||0} XP</span></div>`).join('');
+  }catch(e){ roster.innerHTML = '<p style="font-size:12.5px; color:#a83c32">Não foi possível carregar a turma agora.</p>'; }
+}
+
+/* ================= EXPORTAR / IMPORTAR PROGRESSO ================= */
+function exportProgress(){
+  const payload = { name: state.name, xp: state.xp, completed:[...state.completed], streak: state.streak, freezes: state.freezes, earnedBadges:[...state.earnedBadges], highContrast: state.highContrast, leftHanded: state.leftHanded, uid: state.uid, turmaCode: state.turmaCode, lastActiveDate: todayStr() };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'trastes-progresso.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+function importProgress(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e)=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      state.name = data.name || state.name;
+      state.xp = data.xp || 0;
+      state.completed = new Set(data.completed || []);
+      state.streak = data.streak || 1;
+      state.freezes = data.freezes ?? 1;
+      state.earnedBadges = new Set(data.earnedBadges || []);
+      state.highContrast = !!data.highContrast;
+      state.leftHanded = !!data.leftHanded;
+      state.uid = data.uid || state.uid;
+      state.turmaCode = data.turmaCode || '';
+      state.guestMode = false;
+      await saveProfile();
+      applyVisualPrefs();
+      renderAll();
+      showToast('Progresso importado com sucesso');
+    }catch(err){ showToast('Não foi possível ler esse arquivo'); }
+  };
+  reader.readAsText(file);
+}
+
+init();
+
+// PWA: registra o service worker só quando faz sentido (site real hospedado
+// com HTTPS ou localhost). Dentro do preview de artifacts ou aberto como
+// arquivo local (file://) isso é ignorado silenciosamente — sem quebrar nada.
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{ /* hospedagem sem suporte a SW, sem problema */ });
+  });
+}
+</script>
+</body>
+</html>
