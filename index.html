@@ -148,6 +148,15 @@
   body.high-contrast .quiz-opt{border-width:2px;}
   body.high-contrast .xpbar-wrap{background:#ccc;}
   body.high-contrast .sidebar{background:#000;}
+  .lesson-tabs{display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line);}
+  .lesson-tab-btn{background:none; border:none; padding:8px 4px; font-size:13.5px; font-weight:600; color:#8a7358; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px;}
+  .lesson-tab-btn.active{color:var(--copper); border-bottom-color:var(--copper);}
+  .video-tab-content{text-align:center; padding:18px 10px;}
+  .video-tab-content p{font-size:13px; color:#5b4636; margin:0 0 16px;}
+  .video-search-btn{display:inline-flex; align-items:center; gap:8px; background:#FF0000; color:white; padding:12px 20px; border-radius:10px; text-decoration:none; font-weight:600; font-size:14px;}
+  .video-search-btn:hover{background:#d90000;}
+  .video-embed{position:relative; width:100%; padding-bottom:56.25%; height:0; border-radius:12px; overflow:hidden; margin-bottom:14px;}
+  .video-embed iframe{position:absolute; top:0; left:0; width:100%; height:100%; border:0;}
 </style>
 </head>
 <body>
@@ -366,6 +375,61 @@ function chordFigure(key, title, baseFret, strings, barre, caption){
   return `<figure>${chordDiagram(title, baseFret, strings, barre)}
     <div style="margin-top:8px"><button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border:1px solid var(--line)" onclick="AudioEngine.playChord(chordFreqs('${key}'))">🔊 Ouvir o acorde</button></div>
     <figcaption>${caption}</figcaption></figure>`;
+}
+
+/* ================= DADOS ================= */
+// Cada entrada aqui vira a aba "Vídeos" da lição correspondente.
+// `query`: busca pronta no YouTube (sempre válida, nunca quebra).
+// `videoId`: deixe null por padrão. Se você encontrar um vídeo específico de
+// confiança para essa lição, coloque o ID dele aqui (a parte depois de
+// "v=" na URL do YouTube) que o app passa a incorporar o player de verdade
+// no lugar do botão de busca.
+const LESSON_VIDEOS = {
+  f1:{query:'como funciona o violão partes e anatomia para iniciantes', videoId:null},
+  f2:{query:'nomes das cordas do violão E A D G B E cordas soltas', videoId:null},
+  f3:{query:'postura e posição das mãos para tocar violão iniciantes', videoId:null},
+  f5:{query:'como ler diagrama de acorde de violão para iniciantes', videoId:null},
+  f6:{query:'como tocar o acorde de Mi menor Em no violão iniciante', videoId:null},
+  acor1:{query:'como tocar o acorde de Dó maior C no violão', videoId:null},
+  acor2:{query:'como tocar o acorde de Sol maior G no violão', videoId:null},
+  acor3:{query:'como tocar o acorde de Ré maior D no violão', videoId:null},
+  acor4:{query:'como tocar o acorde de Lá menor Am no violão', videoId:null},
+  acor6:{query:'como trocar de acorde rápido no violão sem travar', videoId:null},
+  rit1:{query:'como contar o tempo compasso 4 por 4 no violão', videoId:null},
+  rit2:{query:'batida para baixo no violão como fazer', videoId:null},
+  rit3:{query:'batida para cima no violão como fazer', videoId:null},
+  rit5:{query:'levada de balada no violão para iniciantes', videoId:null},
+  rit6:{query:'levada de MPB simples no violão', videoId:null},
+  rep1:{query:'como ler cifra de música no violão para iniciantes', videoId:null},
+  rep5:{query:'como gravar e avaliar sua própria execução no violão', videoId:null},
+  rep6:{query:'como adaptar a levada para uma música no violão', videoId:null},
+  pest1:{query:'o que é pestana no violão explicação', videoId:null},
+  pest2:{query:'exercícios para fortalecer o dedo indicador pestana violão', videoId:null},
+  pest3:{query:'acorde de Fá fácil sem pestana completa no violão', videoId:null},
+  pest4:{query:'acorde Si7 B7 no violão sem pestana', videoId:null},
+  pest6:{query:'como fazer pestana completa no violão acorde de Fá', videoId:null},
+  teo1:{query:'o que é uma escala musical explicação simples violão', videoId:null},
+  teo2:{query:'escala de Dó maior no violão posição aberta', videoId:null},
+  teo3:{query:'campo harmônico de Dó maior explicado violão', videoId:null},
+  teo5:{query:'progressão de acordes 1 5 6 4 explicação violão', videoId:null},
+  teo6:{query:'cifras avançadas m7 sus4 dim explicação violão', videoId:null},
+  avan1:{query:'introdução ao arpejo no violão para iniciantes', videoId:null},
+  avan2:{query:'padrão de dedilhado pima no violão', videoId:null},
+  avan3:{query:'introdução ao fingerstyle no violão', videoId:null},
+  avan4:{query:'percussão no tampo do violão técnica', videoId:null},
+  avan6:{query:'exercícios de independência dos dedos no violão', videoId:null},
+};
+function videoTabHtml(lessonId){
+  const v = LESSON_VIDEOS[lessonId];
+  if(!v) return null;
+  if(v.videoId){
+    return `<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/${v.videoId}" title="Vídeo da lição" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  }
+  const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(v.query);
+  return `<div class="video-tab-content">
+    <p>Ainda não temos um vídeo específico salvo para esta lição — aqui está uma busca já filtrada com o termo certo no YouTube.</p>
+    <a class="video-search-btn" href="${url}" target="_blank" rel="noopener">▶ Buscar vídeos sobre isso no YouTube</a>
+  </div>`;
 }
 
 /* ================= DADOS ================= */
@@ -902,15 +966,33 @@ function openLesson(id){
     });
   } else {
     const bodyHtml = typeof lesson.body === 'function' ? lesson.body() : lesson.body;
+    const videoHtml = videoTabHtml(id);
+    const tabsHtml = videoHtml ? `<div class="lesson-tabs">
+        <button class="lesson-tab-btn active" id="tabAulaBtn" onclick="showLessonTab('aula')">📖 Aula</button>
+        <button class="lesson-tab-btn" id="tabVideoBtn" onclick="showLessonTab('video')">🎥 Vídeos</button>
+      </div>` : '';
     modal.innerHTML = `<button class="close" onclick="closeModal()">✕</button>
       <div class="kicker">${lesson.kicker}</div><h2>${lesson.title}</h2>
-      <div class="body">${bodyHtml}</div>
+      ${tabsHtml}
+      <div class="body" id="tabAulaContent">${bodyHtml}</div>
+      ${videoHtml ? `<div class="body" id="tabVideoContent" style="display:none">${videoHtml}</div>` : ''}
       <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
         <button class="btn btn-primary" onclick="completeLesson('${id}')">${alreadyDone?'Revisado':'Concluir'}${alreadyDone?'':' (+'+lesson.xp+' XP)'}</button></div>`;
     overlay.classList.add('open');
   }
 }
 function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+function showLessonTab(which){
+  const aulaBtn = document.getElementById('tabAulaBtn'), videoBtn = document.getElementById('tabVideoBtn');
+  const aulaContent = document.getElementById('tabAulaContent'), videoContent = document.getElementById('tabVideoContent');
+  if(which==='aula'){
+    aulaBtn.classList.add('active'); videoBtn.classList.remove('active');
+    aulaContent.style.display='block'; videoContent.style.display='none';
+  } else {
+    videoBtn.classList.add('active'); aulaBtn.classList.remove('active');
+    videoContent.style.display='block'; aulaContent.style.display='none';
+  }
+}
 
 /* ================= TRILHA ALTERNATIVA: teste de nível para pular módulo ================= */
 function skipModuleTest(prevIdx){
