@@ -130,6 +130,14 @@
   .badge-item.locked{opacity:.35;}
   .badge-item .bicon{font-size:26px;}
   .badge-item .btitle{font-size:10.5px; font-weight:600; color:var(--rosewood); margin-top:4px; line-height:1.2;}
+  .modprog-row{margin-bottom:14px;}
+  .modprog-row .modprog-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:600; color:var(--rosewood); margin-bottom:4px;}
+  .modprog-bar-bg{height:8px; border-radius:5px; background:rgba(59,32,21,0.1); overflow:hidden;}
+  .modprog-bar-fill{height:100%; background:linear-gradient(90deg, var(--moss-light), var(--moss)); border-radius:5px;}
+  .stat-box{display:flex; gap:14px; margin-bottom:18px;}
+  .stat-box .box{flex:1; text-align:center; background:rgba(59,32,21,0.05); border-radius:12px; padding:12px 6px;}
+  .stat-box .box .num{font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:var(--copper);}
+  .stat-box .box .lbl{font-size:11px; color:#8a7358;}
   .node:focus-visible, .quiz-opt:focus-visible, .btn:focus-visible, .tool-btn:focus-visible{ outline:3px solid var(--copper); outline-offset:2px; }
   .toggle-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; font-size:13.5px; color:var(--rosewood); gap:10px;}
   .switch{position:relative; width:42px; height:24px; flex-shrink:0;}
@@ -147,7 +155,24 @@
   body.high-contrast .node.locked{background:#555; color:#fff;}
   body.high-contrast .quiz-opt{border-width:2px;}
   body.high-contrast .xpbar-wrap{background:#ccc;}
+  body.dark-mode{ --spruce:#1a120b; --spruce-deep:#2a1d12; --rosewood:#F3E9D8; --rosewood-2:#0f0b07; --copper:#E08A52; --copper-light:#F0A87A; --moss:#7FAE86; --moss-light:#9CC7A2; --cream:#241a12; --ink:#F0E6D6; --line:rgba(243,233,216,0.16); --steel:#8a8a82; }
+  body.dark-mode{ background-image:none; }
+  body.dark-mode .modal .body p, body.dark-mode .modal .body ul, body.dark-mode .modal .body ol, body.dark-mode .modal .body li,
+  body.dark-mode figcaption, body.dark-mode .string-row .desc, body.dark-mode .hero p, body.dark-mode .locked-module p,
+  body.dark-mode .video-tab-content p, body.dark-mode .badge-item .btitle, body.dark-mode .rank-row, body.dark-mode .modprog-label,
+  body.dark-mode .stat-box .lbl{ color:#D8C9AE; }
+  body.dark-mode .onboard-input{ background:#1a120b; color:#F0E6D6; border-color:rgba(243,233,216,0.25); }
+  body.dark-mode .quiz-opt{ color:#F0E6D6; }
+  body.dark-mode .string-row, body.dark-mode .badge-item, body.dark-mode .stat-box .box{ background:rgba(243,233,216,0.06); }
   body.high-contrast .sidebar{background:#000;}
+  @media (max-width:600px){
+    .node-row.left, .node-row.right{ justify-content:center; }
+    .node{ width:62px; height:62px; }
+    .node .ic{ font-size:20px; }
+    .node-label{ width:120px; font-size:11.5px; }
+    .connector{ height:34px; }
+    .trilha{ margin-top:26px; }
+  }
   .lesson-tabs{display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line);}
   .lesson-tab-btn{background:none; border:none; padding:8px 4px; font-size:13.5px; font-weight:600; color:#8a7358; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px;}
   .lesson-tab-btn.active{color:var(--copper); border-bottom-color:var(--copper);}
@@ -210,6 +235,8 @@
         <div class="stat">⭐ Nível <span id="levelVal">1</span></div>
       </div>
       <div class="stats-row">
+        <button class="tool-btn" onclick="showChordLibrary()">📚 Acordes</button>
+        <button class="tool-btn" onclick="showProgressOverview()">📊 Progresso</button>
         <button class="tool-btn" onclick="toggleBadges()">🏅 Conquistas</button>
         <button class="tool-btn" onclick="toggleMetronomePanel()">🥁 Metrônomo</button>
         <button class="tool-btn" onclick="toggleTunerPanel()">🎵 Afinador</button>
@@ -227,6 +254,7 @@
   <h3>🥁 Metrônomo</h3>
   <div class="metro-dot" id="metroDot"></div>
   <div class="bpm-row"><input type="range" id="bpmRange" min="50" max="200" value="80"/><span class="bpm-val" id="bpmVal">80</span></div>
+  <button class="btn btn-ghost" style="width:100%; border:1px solid var(--line); margin-bottom:8px" onclick="tapTempo()">👆 Tap tempo</button>
   <button class="btn btn-primary" id="metroToggleBtn" style="width:100%" onclick="toggleMetronome()">Iniciar</button>
 </div>
 
@@ -251,10 +279,17 @@
   <div class="toggle-row">Alto contraste
     <label class="switch"><input type="checkbox" id="chkContrast" onchange="toggleHighContrast(this.checked)"/><span class="slider"></span></label>
   </div>
+  <div class="toggle-row">Modo escuro
+    <label class="switch"><input type="checkbox" id="chkDark" onchange="toggleDarkMode(this.checked)"/><span class="slider"></span></label>
+  </div>
   <div class="toggle-row">Sou canhoto(a)
     <label class="switch"><input type="checkbox" id="chkLefty" onchange="toggleLeftHanded(this.checked)"/><span class="slider"></span></label>
   </div>
+  <div class="toggle-row">Lembrete ao abrir o app
+    <label class="switch"><input type="checkbox" id="chkReminders" onchange="toggleReminders(this.checked)"/><span class="slider"></span></label>
+  </div>
   <hr class="settings-divider"/>
+  <button class="btn btn-ghost" style="width:100%; border:1px solid var(--line); margin-bottom:8px" onclick="toggleSettingsPanel(); showTour();">❓ Rever tour de boas-vindas</button>
   <button class="btn btn-ghost" style="width:100%; border:1px solid var(--line); margin-bottom:8px" onclick="toggleSettingsPanel(); toggleRankingPanel();">🏆 Ranking entre amigos</button>
   <button class="btn btn-ghost" style="width:100%; border:1px solid var(--line)" onclick="toggleSettingsPanel(); toggleTurmaPanel();">🏫 Modo turma / professor</button>
 </div>
@@ -375,6 +410,59 @@ function chordFigure(key, title, baseFret, strings, barre, caption){
   return `<figure>${chordDiagram(title, baseFret, strings, barre)}
     <div style="margin-top:8px"><button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border:1px solid var(--line)" onclick="AudioEngine.playChord(chordFreqs('${key}'))">🔊 Ouvir o acorde</button></div>
     <figcaption>${caption}</figcaption></figure>`;
+}
+// Biblioteca de referência: todos os acordes ensinados na trilha, num só lugar.
+const CHORD_LIBRARY = [
+  {key:'Em', title:'Mi menor (Em)', baseFret:1, strings:[0,{fret:2,finger:2},{fret:2,finger:3},0,0,0], barre:null},
+  {key:'C', title:'Dó maior (C)', baseFret:1, strings:['x',{fret:3,finger:3},{fret:2,finger:2},0,{fret:1,finger:1},0], barre:null},
+  {key:'G', title:'Sol maior (G)', baseFret:1, strings:[{fret:3,finger:3},{fret:2,finger:2},0,0,0,{fret:3,finger:4}], barre:null},
+  {key:'D', title:'Ré maior (D)', baseFret:1, strings:['x','x',0,{fret:2,finger:1},{fret:3,finger:3},{fret:2,finger:2}], barre:null},
+  {key:'Am', title:'Lá menor (Am)', baseFret:1, strings:['x',0,{fret:2,finger:2},{fret:2,finger:3},{fret:1,finger:1},0], barre:null},
+  {key:'babyF', title:'Fá fácil (baby F)', baseFret:1, strings:['x','x',{fret:3,finger:3},{fret:2,finger:2},null,null], barre:{fret:1,from:4,to:5,finger:1}},
+  {key:'B7', title:'Si7 (B7)', baseFret:1, strings:['x',{fret:2,finger:2},{fret:1,finger:1},{fret:2,finger:3},0,{fret:2,finger:4}], barre:null},
+  {key:'fullF', title:'Fá completo (F)', baseFret:1, strings:[null,{fret:3,finger:3},{fret:3,finger:4},{fret:2,finger:2},null,null], barre:{fret:1,from:0,to:5,finger:1}},
+];
+function showChordLibrary(){
+  const overlay = document.getElementById('overlay'), modal = document.getElementById('modal');
+  const cards = CHORD_LIBRARY.map(c=>{
+    const known = state.completed.has(chordUnlockNodeFor(c.key));
+    return `<div style="${known?'':'opacity:.4'}">${chordFigure(c.key, c.title, c.baseFret, c.strings, c.barre, known?'':'ainda não visto na trilha')}</div>`;
+  }).join('');
+  modal.innerHTML = `<button class="close" onclick="closeModal()">✕</button>
+    <div class="kicker">Referência rápida</div><h2>📚 Biblioteca de acordes</h2>
+    <p style="font-size:12.5px;color:#8a7358;margin:-4px 0 14px">Todos os acordes da trilha, num só lugar, com áudio — acordes esmaecidos ainda não foram vistos nas lições.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; text-align:center">${cards}</div>
+    <div class="modal-footer"><button class="btn btn-primary" onclick="closeModal()">Fechar</button></div>`;
+  overlay.classList.add('open');
+}
+function chordUnlockNodeFor(key){
+  const map = {Em:'f6', C:'acor1', G:'acor2', D:'acor3', Am:'acor4', babyF:'pest3', B7:'pest4', fullF:'pest6'};
+  return map[key] || null;
+}
+function showProgressOverview(){
+  const overlay = document.getElementById('overlay'), modal = document.getElementById('modal');
+  const totalNodes = MODULES.reduce((a,m)=>a+m.nodes.length,0);
+  const doneNodes = [...state.completed].length;
+  const overallPct = Math.round((doneNodes/totalNodes)*100);
+  const quizPct = state.quizTotal ? Math.round((state.quizCorrect/state.quizTotal)*100) : null;
+  const bars = MODULES.map(m=>{
+    const done = m.nodes.filter(n=>state.completed.has(n.id)).length;
+    const pct = Math.round((done/m.nodes.length)*100);
+    return `<div class="modprog-row">
+      <div class="modprog-label"><span>${m.icon} ${m.title}</span><span>${done}/${m.nodes.length}</span></div>
+      <div class="modprog-bar-bg"><div class="modprog-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  modal.innerHTML = `<button class="close" onclick="closeModal()">✕</button>
+    <div class="kicker">Sua jornada até aqui</div><h2>📊 Visão geral de progresso</h2>
+    <div class="stat-box">
+      <div class="box"><div class="num">${overallPct}%</div><div class="lbl">da trilha completa</div></div>
+      <div class="box"><div class="num">${state.xp}</div><div class="lbl">XP total</div></div>
+      <div class="box"><div class="num">${quizPct!==null ? quizPct+'%' : '—'}</div><div class="lbl">acerto em quizzes</div></div>
+    </div>
+    ${bars}
+    <div class="modal-footer"><button class="btn btn-primary" onclick="closeModal()">Fechar</button></div>`;
+  overlay.classList.add('open');
 }
 
 /* ================= DADOS ================= */
@@ -705,7 +793,7 @@ const LESSONS = {
 };
 
 /* ================= ESTADO + PERSISTÊNCIA ================= */
-let state = { xp:0, completed:new Set(), streak:1, freezes:1, earnedBadges:new Set(), name:'', guestMode:false, syncWarned:false, highContrast:false, leftHanded:false, uid:null, turmaCode:'' };
+let state = { xp:0, completed:new Set(), streak:1, freezes:1, earnedBadges:new Set(), name:'', guestMode:false, syncWarned:false, highContrast:false, darkMode:false, leftHanded:false, uid:null, turmaCode:'', quizTotal:0, quizCorrect:0, quizAttempted:new Set(), remindersOn:false, lastActiveBeforeToday:null };
 const STORAGE_KEY = 'trastes_profile';
 
 function levelFromXp(xp){ return Math.floor(xp/100)+1; }
@@ -762,7 +850,7 @@ async function loadProfile(){
 
 async function saveProfile(){
   if(state.guestMode) return;
-  const payload = { name: state.name, xp: state.xp, completed:[...state.completed], streak: state.streak, freezes: state.freezes, earnedBadges:[...state.earnedBadges], highContrast: state.highContrast, leftHanded: state.leftHanded, uid: state.uid, turmaCode: state.turmaCode, lastActiveDate: todayStr() };
+  const payload = { name: state.name, xp: state.xp, completed:[...state.completed], streak: state.streak, freezes: state.freezes, earnedBadges:[...state.earnedBadges], highContrast: state.highContrast, leftHanded: state.leftHanded, uid: state.uid, turmaCode: state.turmaCode, quizTotal: state.quizTotal, quizCorrect: state.quizCorrect, quizAttempted:[...state.quizAttempted], remindersOn: state.remindersOn, darkMode: state.darkMode, lastActiveDate: todayStr() };
   try{
     await withRetries(()=> storageSet(STORAGE_KEY, JSON.stringify(payload)), 2, 500);
     if(Backend.hasCloud) await withRetries(()=> window.storage.set('leaderboard:'+state.uid, JSON.stringify({name:state.name, xp:state.xp, streak:state.streak}), true), 1, 300).catch(()=>{});
@@ -804,10 +892,46 @@ function showOnboarding(){
     await saveProfile();
     document.getElementById('overlay').classList.remove('open');
     renderAll();
+    setTimeout(showTour, 400);
   };
   document.getElementById('startBtn').addEventListener('click', start);
   input.addEventListener('keydown', e=>{ if(e.key==='Enter') start(); });
 }
+
+/* ================= TOUR GUIADO ================= */
+const TOUR_SLIDES = [
+  {emoji:'🎸', title:'Bem-vindo ao Trastes!', text:'Sua trilha fica no meio da tela, organizada em módulos do zero ao avançado. Clique num nódulo destacado para abrir a lição.'},
+  {emoji:'🥁', title:'Metrônomo e afinador', text:'No topo da tela, use o 🥁 Metrônomo pra praticar no tempo certo e o 🎵 Afinador pra afinar seu violão pelo microfone.'},
+  {emoji:'🏅', title:'Conquistas e XP', text:'Cada lição dá XP e sobe seu nível. O botão 🏅 Conquistas mostra marcos especiais que você vai desbloqueando.'},
+  {emoji:'⚙️', title:'Mais opções', text:'Em ⚙️ Mais você encontra alto contraste, modo canhoto, ranking entre amigos e o modo turma — vale dar uma espiada.'},
+  {emoji:'🔥', title:'Mãos à obra!', text:'Seu progresso fica salvo automaticamente. Boa prática — vamos começar pelos Fundamentos.'},
+];
+let tourStep = 0;
+function showTour(){
+  tourStep = 0;
+  renderTourSlide();
+  document.getElementById('overlay').classList.add('open');
+}
+function renderTourSlide(){
+  const modal = document.getElementById('modal');
+  const s = TOUR_SLIDES[tourStep];
+  const isLast = tourStep === TOUR_SLIDES.length-1;
+  modal.innerHTML = `<button class="close" onclick="closeModal()">✕</button>
+    <div style="text-align:center; padding:10px 0">
+      <div style="font-size:52px; margin-bottom:10px">${s.emoji}</div>
+      <h2 style="margin-bottom:8px">${s.title}</h2>
+      <p style="font-size:14px; color:#5b4636; line-height:1.6; max-width:380px; margin:0 auto">${s.text}</p>
+      <div style="display:flex; justify-content:center; gap:6px; margin-top:18px">
+        ${TOUR_SLIDES.map((_,i)=>`<span style="width:7px;height:7px;border-radius:50%;background:${i===tourStep?'var(--copper)':'var(--line)'}"></span>`).join('')}
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:${tourStep>0?'space-between':'flex-end'}">
+      ${tourStep>0?'<button class="btn btn-ghost" onclick="tourPrev()">Voltar</button>':''}
+      <button class="btn btn-primary" onclick="${isLast?'closeModal()':'tourNext()'}">${isLast?'Começar a tocar!':'Próximo'}</button>
+    </div>`;
+}
+function tourNext(){ tourStep++; renderTourSlide(); }
+function tourPrev(){ tourStep--; renderTourSlide(); }
 
 function showLoadErrorScreen(){
   const overlay = document.getElementById('overlay');
@@ -867,10 +991,17 @@ async function init(){
   state.leftHanded = !!profile.leftHanded;
   state.uid = profile.uid || (crypto.randomUUID ? crypto.randomUUID() : 'u'+Date.now());
   state.turmaCode = profile.turmaCode || '';
+  state.quizTotal = profile.quizTotal || 0;
+  state.quizCorrect = profile.quizCorrect || 0;
+  state.quizAttempted = new Set(profile.quizAttempted || []);
+  state.remindersOn = !!profile.remindersOn;
+  state.darkMode = !!profile.darkMode;
+  state.lastActiveBeforeToday = profile.lastActiveDate || null;
   updateStreak(profile);
   await saveProfile();
   applyVisualPrefs();
-  state.currentModule = 'fundamentos';
+  maybeShowPracticeReminder();
+  state.currentModule = findResumeModule();
   renderAll();
   checkBadges();
 }
@@ -880,6 +1011,16 @@ function moduleUnlocked(idx){
   if(idx===0) return true;
   const prev = MODULES[idx-1];
   return prev.nodes.every(n=>state.completed.has(n.id));
+}
+function findResumeModule(){
+  for(const m of MODULES){ if(!m.nodes.every(n=>state.completed.has(n.id))) return m.id; }
+  return MODULES[MODULES.length-1].id;
+}
+function getNextNodeId(currentId){
+  const flat = [];
+  MODULES.forEach(m=> m.nodes.forEach(n=> flat.push(n.id)));
+  const idx = flat.indexOf(currentId);
+  return (idx>=0 && idx<flat.length-1) ? flat[idx+1] : null;
 }
 function renderSidebar(){
   document.getElementById('profileChip').style.display = state.name ? 'flex' : 'none';
@@ -959,9 +1100,15 @@ function openLesson(id){
         const i = parseInt(btn.dataset.i);
         modal.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
         const fb = document.getElementById('quizFeedback');
-        if(i===lesson.correct){ btn.classList.add('correct'); fb.style.color='var(--moss)'; fb.textContent='Isso aí! '+lesson.explain; }
+        const isCorrect = i===lesson.correct;
+        if(isCorrect){ btn.classList.add('correct'); fb.style.color='var(--moss)'; fb.textContent='Isso aí! '+lesson.explain; }
         else{ btn.classList.add('wrong'); modal.querySelectorAll('.quiz-opt')[lesson.correct].classList.add('correct'); fb.style.color='#a83c32'; fb.textContent='Quase! '+lesson.explain; }
         document.getElementById('quizDone').style.display='inline-block';
+        if(!state.quizAttempted.has(id)){
+          state.quizAttempted.add(id); state.quizTotal++;
+          if(isCorrect) state.quizCorrect++;
+          saveProfile();
+        }
       });
     });
   } else {
@@ -1046,7 +1193,19 @@ async function completeLesson(id){
     await saveProfile();
     setTimeout(checkBadges, 900); // depois do toast de XP, pra não sobrepor
   }
-  closeModal(); renderAll();
+  renderAll(); // atualiza barra lateral/XP por baixo, sem fechar o modal ainda
+  const nextId = getNextNodeId(id);
+  const footer = document.querySelector('#modal .modal-footer');
+  if(footer){
+    if(nextId){
+      footer.innerHTML = `<button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
+        <button class="btn btn-primary" onclick="openLesson('${nextId}')">Próxima lição →</button>`;
+    } else {
+      footer.innerHTML = `<button class="btn btn-primary" onclick="closeModal()">Você concluiu a trilha inteira! 🎉</button>`;
+    }
+  } else {
+    closeModal();
+  }
 }
 function showToast(msg){
   const t = document.getElementById('toast'); t.textContent='🎉 '+msg; t.classList.add('show');
@@ -1086,7 +1245,24 @@ function toggleBadges(){
 }
 
 /* ================= METRÔNOMO ================= */
-let metro = { bpm:80, playing:false, timerId:null, beat:0 };
+let metro = { bpm:80, playing:false, timerId:null, beat:0, tapTimes:[] };
+function tapTempo(){
+  const now = performance.now();
+  metro.tapTimes.push(now);
+  if(metro.tapTimes.length>1 && now - metro.tapTimes[metro.tapTimes.length-2] > 2500) metro.tapTimes = [now];
+  if(metro.tapTimes.length>6) metro.tapTimes.shift();
+  if(metro.tapTimes.length>=2){
+    const deltas = [];
+    for(let i=1;i<metro.tapTimes.length;i++) deltas.push(metro.tapTimes[i]-metro.tapTimes[i-1]);
+    const avg = deltas.reduce((a,b)=>a+b,0)/deltas.length;
+    const bpm = Math.max(50, Math.min(200, Math.round(60000/avg)));
+    metro.bpm = bpm;
+    document.getElementById('bpmRange').value = bpm;
+    document.getElementById('bpmVal').textContent = bpm;
+    if(metro.playing){ stopMetronomeTimer(); startMetronomeTimer(); }
+  }
+  AudioEngine.playClick(true);
+}
 document.getElementById('bpmRange').addEventListener('input', e=>{
   metro.bpm = parseInt(e.target.value);
   document.getElementById('bpmVal').textContent = metro.bpm;
@@ -1191,6 +1367,7 @@ function tunerLoop(){
 /* ================= CONFIGURAÇÕES (contraste, canhoto) ================= */
 function applyVisualPrefs(){
   document.body.classList.toggle('high-contrast', state.highContrast);
+  document.body.classList.toggle('dark-mode', state.darkMode);
 }
 function toggleSettingsPanel(){
   const panel = document.getElementById('settingsPanel');
@@ -1198,10 +1375,29 @@ function toggleSettingsPanel(){
   if(panel.classList.contains('open')){
     document.getElementById('chkContrast').checked = state.highContrast;
     document.getElementById('chkLefty').checked = state.leftHanded;
+    document.getElementById('chkReminders').checked = state.remindersOn;
+    document.getElementById('chkDark').checked = state.darkMode;
   }
 }
 async function toggleHighContrast(checked){ state.highContrast = checked; applyVisualPrefs(); await saveProfile(); }
+async function toggleDarkMode(checked){ state.darkMode = checked; applyVisualPrefs(); await saveProfile(); }
 async function toggleLeftHanded(checked){ state.leftHanded = checked; await saveProfile(); showToast(checked?'Modo canhoto ativado — diagramas espelhados nas próximas aulas abertas':'Modo canhoto desativado'); }
+async function toggleReminders(checked){
+  if(checked){
+    if(!('Notification' in window)){ showToast('Seu navegador não suporta notificações'); document.getElementById('chkReminders').checked=false; return; }
+    const perm = await Notification.requestPermission();
+    if(perm!=='granted'){ showToast('Permissão de notificação não concedida'); document.getElementById('chkReminders').checked=false; return; }
+  }
+  state.remindersOn = checked;
+  await saveProfile();
+  showToast(checked?'Lembrete ativado — você recebe um aviso ao abrir o app em dias que ainda não praticou':'Lembrete desativado');
+}
+function maybeShowPracticeReminder(){
+  if(!state.remindersOn || !('Notification' in window) || Notification.permission!=='granted') return;
+  if(state.lastActiveBeforeToday && state.lastActiveBeforeToday !== todayStr()){
+    new Notification('🔥 Não perca sua sequência!', { body: `Você está com ${state.streak} dia(s) seguidos no Trastes. Toque um pouco hoje!`, icon:'icon-192.png' });
+  }
+}
 
 /* ================= RANKING ENTRE AMIGOS (armazenamento compartilhado) ================= */
 async function toggleRankingPanel(){
@@ -1281,7 +1477,7 @@ async function viewTurma(){
 
 /* ================= EXPORTAR / IMPORTAR PROGRESSO ================= */
 function exportProgress(){
-  const payload = { name: state.name, xp: state.xp, completed:[...state.completed], streak: state.streak, freezes: state.freezes, earnedBadges:[...state.earnedBadges], highContrast: state.highContrast, leftHanded: state.leftHanded, uid: state.uid, turmaCode: state.turmaCode, lastActiveDate: todayStr() };
+  const payload = { name: state.name, xp: state.xp, completed:[...state.completed], streak: state.streak, freezes: state.freezes, earnedBadges:[...state.earnedBadges], highContrast: state.highContrast, leftHanded: state.leftHanded, uid: state.uid, turmaCode: state.turmaCode, quizTotal: state.quizTotal, quizCorrect: state.quizCorrect, quizAttempted:[...state.quizAttempted], remindersOn: state.remindersOn, darkMode: state.darkMode, lastActiveDate: todayStr() };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = 'trastes-progresso.json'; a.click();
@@ -1303,6 +1499,11 @@ function importProgress(file){
       state.leftHanded = !!data.leftHanded;
       state.uid = data.uid || state.uid;
       state.turmaCode = data.turmaCode || '';
+      state.quizTotal = data.quizTotal || 0;
+      state.quizCorrect = data.quizCorrect || 0;
+      state.quizAttempted = new Set(data.quizAttempted || []);
+      state.remindersOn = !!data.remindersOn;
+      state.darkMode = !!data.darkMode;
       state.guestMode = false;
       await saveProfile();
       applyVisualPrefs();
